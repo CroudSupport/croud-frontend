@@ -1,0 +1,7 @@
+/*******************************
+    User Variable Overrides
+*******************************/
+@dividerSize: 0px;
+@invertedBackground: #0C0C0C;
+
+@borderRadius: 0;

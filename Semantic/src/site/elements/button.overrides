@@ -1,0 +1,12 @@
+/*******************************
+         Site Overrides
+*******************************/
+.ui.button:not(.basic) {
+    border: 3px #252525 solid;
+}
+.ui.yellow.button {
+    color: black;
+    &:hover {
+        color: black;
+    }
+}

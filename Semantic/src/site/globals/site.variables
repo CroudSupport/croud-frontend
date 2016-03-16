@@ -1,0 +1,9 @@
+/*******************************
+     User Global Variables
+*******************************/
+
+@fontName : 'Open Sans';
+@importGoogleFonts : true;
+
+@headerFontWeight : 300;
+@h1 : 3.5rem;

@@ -1,0 +1,13 @@
+/*******************************
+         Site Overrides
+*******************************/
+
+@media only screen and (max-width: @mobileBreakpoint) {
+    .ui[class*="very padded"].segment {
+        padding: 2.5rem 1rem;
+
+        .ui[class*="very padded"].segment {
+            padding: 1rem 1rem;
+        }
+    }
+}

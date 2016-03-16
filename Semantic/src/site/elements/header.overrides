@@ -1,0 +1,8 @@
+/*******************************
+         Site Overrides
+*******************************/
+@media only screen and (max-width: @mobileBreakpoint) {
+    h1.ui.header {
+        font-size: 2.3rem;
+    }
+}

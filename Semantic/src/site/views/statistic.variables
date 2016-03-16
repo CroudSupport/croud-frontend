@@ -1,0 +1,5 @@
+/*******************************
+    User Variable Overrides
+*******************************/
+@labelSize: 1.5rem;
+@bottomLabelDistance: 1.786rem;
