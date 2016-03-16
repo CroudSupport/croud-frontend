@@ -27,7 +27,7 @@
     "url": "https://github.com/CroudSupport/croud-frontend/issues"
   },
   "homepage": "https://github.com/CroudSupport/croud-frontend#readme",
-  "dependencies": {
+  "devDependencies": {
     "semantic-ui": "^2.1.8"
   }
 }
