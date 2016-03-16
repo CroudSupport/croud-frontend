@@ -1,0 +1,33 @@
+{
+  "name": "croud-frontend",
+  "version": "0.0.1",
+  "description": "A collection of generic front-end resources for crouyd applications",
+  "main": "croud-frontend.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CroudSupport/croud-frontend.git"
+  },
+  "keywords": [
+    "Croud",
+    "ui",
+    "vue",
+    "semantic",
+    "front-end",
+    "directives",
+    "filters",
+    "components",
+    "less"
+  ],
+  "author": "Brock Reece",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/CroudSupport/croud-frontend/issues"
+  },
+  "homepage": "https://github.com/CroudSupport/croud-frontend#readme",
+  "dependencies": {
+    "semantic-ui": "^2.1.8"
+  }
+}
