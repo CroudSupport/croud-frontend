@@ -4,7 +4,7 @@
             <i class="users icon"></i>
             Croudie Picker
         </a>
-        <semantic-modal size="large" :active.sync="show_modal">
+        <semantic-modal size="large" :active.sync="showModal">
             <div v-if="filters"></div>
             <div class="ui basic segment">
                 <div class="ui top aligned two column grid">
@@ -12,7 +12,8 @@
                         <h2 class="ui header">Croudie Picker</h2>
                     </div>
                     <div class="right floated right aligned column">
-                        <a class="ui blue button">Continue</a>
+                        <a v-if="filteredCroudies.length > 1" transition="fade" class="ui blue basic button" @click="addAll">Select all {{ filteredCroudies.length }} croudies</a>
+                        <a class="ui blue basic button" @click="showModal = false">Continue</a>
                     </div>
                 </div>
             </div>
@@ -22,7 +23,7 @@
                             <div v-el:accordion class="ui vertical accordion fluid menu">
                                 <div class="item">
                                     <div class="ui transparent icon input">
-                                        <input class="prompt" type="text" placeholder="Search croudies..." v-model="search">
+                                        <input class="prompt" type="text" placeholder="Search croudies..." v-model="search" debounce="500">
                                         <i class="search link icon"></i>
                                     </div>
                                 </div>
@@ -49,16 +50,18 @@
                                             </div>
                                         </div>
                                     </div>
+
                                 </div>
                                 <div class="item">
-                                    <div class="header">Hourly Rate <small>(< £{{ rate }})</small></div>
-                                    <input style="width:100%" type="range" min="1" max="50" v-model="rate" />
+                                    <div class="header">Hourly Rate <small>(<= £{{ rate }})</small></div>
+                                    <input style="width:100%" type="range" min="1" max="50" v-model="rate" debounce="500"/>
                                 </div>
                                 <div class="item">
                                     <a class="title">
                                         <i class="dropdown icon"></i>
                                         <div class="ui mini blue circular label">{{ language.length }}</div>
                                         Languages
+                                        <small v-if="language.length" @click.stop="language = []">clear</small>
                                     </a>
                                     <div class="content">
                                         <multi-search placeholder="Search languages..." :search="searchLanguage" :items.sync="language"></multi-search>
@@ -69,6 +72,7 @@
                                         <i class="dropdown icon"></i>
                                         <div class="ui mini blue circular label">{{ country.length }}</div>
                                         Countries
+                                        <small v-if="country.length" @click.stop="country = []">clear</small>
                                     </a>
                                     <div class="content">
                                         <multi-search :flag="true" placeholder="Search countries..." :search="searchAddress" :items.sync="country"></multi-search>
@@ -79,6 +83,7 @@
                                         <i class="dropdown icon"></i>
                                         <div class="ui mini blue circular label">{{ qualification.length }}</div>
                                         Qualifications
+                                        <small v-if="qualification.length" @click.stop="qualification = []">clear</small>
                                     </a>
                                     <div class="content">
                                         <multi-search placeholder="Search qualifications..." :search="searchQualification" :items.sync="qualification"></multi-search>
@@ -89,6 +94,7 @@
                                         <i class="dropdown icon"></i>
                                         <div class="ui mini blue circular label">{{ availability.length }}</div>
                                         Availability
+                                        <small v-if="availability.length" @click.stop="availability = []">clear</small>
                                     </a>
                                     <div class="content">
                                         <div class="ui form">
@@ -107,25 +113,44 @@
                         </div>
                     </div>
 
-                    <div class="ui seven wide column">
+                    <div class="ui seven wide center aligned column">
+                        <div v-if="filteredCroudies.length === 0 && croudies.length > 0" class="ui very padded basic segment">
+                            <h4 class="ui icon grey header">
+                                <i class="circular users icon"></i>
+                                All croudies in this filter have been selected
+                            </h4>
+                        </div>
+                        <div v-if="croudies.length === 0" class="ui very padded basic segment">
+                            <h4 class="ui icon grey header">
+                                <i class="circular users icon"></i>
+                                No croudies match this filter
+                            </h4>
+                        </div>
                         <div :class="dimmerClasses">
                             <div class="ui text large loader">Loading</div>
                         </div>
-                        <div v-if="selected.indexOf(croudie) === -1" v-for="croudie in croudies | filterBy search" @click="add(croudie)" class="ui fluid yellow card" >
-                            <div class="content">
+                        <div v-for="croudie in filteredCroudies | limitBy limit" @click="add(croudie)" class="ui fluid yellow card" >
+                            <div class="left aligned content">
+                                <img v-if="croudie.avatar" class="left floated mini circular ui image" :src="croudie.avatar" />
+
                                 <div class="header">{{ croudie.name }}</div>
                                 <div class="meta">{{ croudie.email }}</div>
                             </div>
                         </div>
+                        <a v-if="filteredCroudies.length > limit" class="ui circular basic icon button" @click="loadMore">
+                            Show more
+                            <semantic-icon class="dropdown"></semantic-icon>
+                        </a>
                     </div>
 
                     <div class="ui four wide column">
                         <div class="ui basic segment">
-                            <strong class="ui header">Selected Croudies</strong>
-                            <div class="ui list">
+                            <strong class="ui header">Selected Croudies <small v-if="selected.length" @click.stop="selected = []">clear</small></strong>
+                            <div class="ui relaxed list">
                                 <div class="item" v-for="croudie in selected" transition="fade">
-                                    <semantic-icon icon="close" colour="red" link @click="remove(croudie)"></semantic-icon>
+                                    <img v-if="croudie.avatar" class="left floated mini circular ui image" :src="croudie.avatar" />
                                     {{ croudie.name }}
+                                    <semantic-icon icon="close" colour="red" link @click="remove(croudie)"></semantic-icon>
                                 </div>
                             </div>
                         </div>
@@ -137,6 +162,7 @@
 
 <script>
     import MultiSearch from './MultiSearch.vue'
+    import Vue from 'vue'
 
     export default {
         props: {
@@ -150,16 +176,17 @@
         data() {
             return {
                 loading: true,
-                show_modal: false,
+                showModal: false,
                 croudie: '',
                 croudies: [],
                 search: '',
                 language: [],
                 country: [],
                 qualification: [],
-                availability: ['Tuesday'],
+                availability: [],
                 days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
-                rate: 13,
+                rate: 0,
+                limit: 5,
 
                 searchAddress: {
                     url: '/api/country/?search={query}',
@@ -202,15 +229,12 @@
         },
 
         ready() {
-            this.$http.post('/api/user/pick', this.filters).then((response) => {
-                this.$set('croudies', response.data.data)
-            })
             $(this.$els.accordion).accordion()
         },
 
         methods: {
             show() {
-                this.show_modal = true
+                this.showModal = true
             },
 
             add(croudie) {
@@ -220,9 +244,31 @@
             remove(croudie) {
                 this.selected.$remove(croudie)
             },
+
+            loadMore() {
+                this.limit += 5
+            },
+
+            hideSelected(data) {
+                return data.filter(croudie => {
+                    return this.selected.map((s) => s.id).indexOf(croudie.id) === -1
+                })
+            },
+
+            addAll() {
+                this.filteredCroudies.map(croudie => {
+                    this.add(croudie)
+                })
+            },
         },
 
         computed: {
+            filteredCroudies() {
+                const filterBy = Vue.filter('filterBy')
+
+                return filterBy(this.hideSelected(this.croudies), this.search, 'name')
+            },
+
             filters() {
                 const data = {
                     languages: this.language.map((language) => language.id),
@@ -231,12 +277,14 @@
                     availability: this.availability,
                     tags: this.tags,
                     system: this.croudie,
+                    rate: this.rate,
                 }
 
                 this.loading = true
                 this.$http.post('/api/user/pick', data).then((response) => {
                     this.$set('croudies', response.data.data)
                     this.loading = false
+                    this.limit = 5
                 })
 
                 return data
