@@ -1,5 +1,8 @@
+var CroudiePicker = require('./Src/CroudiePicker.vue')
+
 module.exports = {
     install: function (Vue, options) {
+        Vue.component('croudie-picker', CroudiePicker);
 
         Vue.directive('chosen', {
             twoWay: true, // note the two-way binding
