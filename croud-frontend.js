@@ -1,8 +1,10 @@
-var CroudiePicker = require('./Src/CroudiePicker.vue')
+var CroudiePicker = require('./Src/CroudiePicker.vue'),
+    MultiSearch = require('./Src/MultiSearch.vue')
 
 module.exports = {
     install: function (Vue, options) {
         Vue.component('croudie-picker', CroudiePicker);
+        Vue.component('multi-search', MultiSearch);
 
         Vue.directive('chosen', {
             twoWay: true, // note the two-way binding
