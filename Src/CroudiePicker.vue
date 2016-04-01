@@ -2,7 +2,8 @@
     <span>
         <a @click="show">
             <i class="users icon"></i>
-            Croudie Picker
+            <span v-if="selected.length">{{ selected.length }} {{ selected.length | pluralize 'Croudie'  }} Selected</span>
+            <span v-else>Croudie Picker</span>
         </a>
         <semantic-modal size="large" :active.sync="showModal">
             <div v-if="filters"></div>
@@ -170,19 +171,37 @@
                     return []
                 },
             },
+            language: {
+                default() {
+                    return []
+                },
+            },
+            country: {
+                default() {
+                    return []
+                },
+            },
+            qualification: {
+                default() {
+                    return []
+                },
+            },
+            availability: {
+                default() {
+                    return []
+                },
+            },
+            croudie: {
+                default: '',
+            },
         },
 
         data() {
             return {
                 loading: true,
                 showModal: false,
-                croudie: '',
                 croudies: [],
                 search: '',
-                language: [],
-                country: [],
-                qualification: [],
-                availability: [],
                 days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
                 rate: 0,
                 limit: 5,
@@ -207,14 +226,6 @@
 
                 searchQualification: {
                     url: '/api/qualification/?search={query}',
-                    fields: {
-                        results: 'data',
-                        title: 'name',
-                        description : 'code',
-                    },
-                },
-
-                searchDays: {
                     fields: {
                         results: 'data',
                         title: 'name',
