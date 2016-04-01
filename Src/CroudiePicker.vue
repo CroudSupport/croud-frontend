@@ -212,7 +212,7 @@
                 limit: 5,
 
                 searchAddress: {
-                    url: '/api/country/?search={query}',
+                    url: '/core/api/country/?search={query}',
                     fields: {
                         results: 'data',
                         title: 'name',
@@ -221,7 +221,7 @@
                 },
 
                 searchLanguage: {
-                    url: '/api/language/?search={query}',
+                    url: '/core/api/language/?search={query}',
                     fields: {
                         results: 'data',
                         title: 'name',
@@ -230,7 +230,7 @@
                 },
 
                 searchQualification: {
-                    url: '/api/qualification/?search={query}',
+                    url: '/core/api/qualification/?search={query}',
                     fields: {
                         results: 'data',
                         title: 'name',
@@ -241,6 +241,7 @@
 
         ready() {
             $(this.$els.accordion).accordion()
+            $.fn['iCheck'] = function() {}
         },
 
         methods: {
@@ -292,7 +293,7 @@
                 }
 
                 this.loading = true
-                this.$http.post('/api/user/pick', data).then((response) => {
+                this.$http.post('/core/api/user/pick', data).then((response) => {
                     this.$set('croudies', response.data.data)
                     this.loading = false
                     this.limit = 5
