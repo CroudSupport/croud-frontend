@@ -1,10 +1,15 @@
 <template>
     <span>
-        <a @click="show">
-            <i class="users icon"></i>
-            <span v-if="selected.length">{{ selected.length }} {{ selected.length | pluralize 'Croudie'  }} Selected</span>
-            <span v-else>Croudie Picker</span>
-        </a>
+        <div>
+            <strong>
+                <a @click="show">Croudie Picker</a>
+            </strong>
+        </div>
+        <div v-if="selected.length">
+            <span v-for="croudie in selected">
+                <img class="ui mini circular inline image" :title="croudie.name" :src="croudie.avatar">
+            </span>
+        </div>
         <semantic-modal size="large" :active.sync="showModal">
             <div v-if="filters"></div>
             <div class="ui basic segment">
