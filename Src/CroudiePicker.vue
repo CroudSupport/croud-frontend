@@ -161,7 +161,6 @@
 </template>
 
 <script>
-    import MultiSearch from './MultiSearch.vue'
     import Vue from 'vue'
 
     export default {
@@ -222,10 +221,6 @@
                     },
                 },
             }
-        },
-
-        components: {
-            MultiSearch,
         },
 
         ready() {
