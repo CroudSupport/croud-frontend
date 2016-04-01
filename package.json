@@ -3,6 +3,9 @@
   "version": "0.0.1",
   "description": "A collection of generic front-end resources for crouyd applications",
   "main": "croud-frontend.js",
+  "browserify": {
+    "transform": ["vueify"]
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
