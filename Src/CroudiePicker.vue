@@ -272,6 +272,10 @@
                     this.add(croudie)
                 })
             },
+
+            saveFilter() {
+                this.$http.post('/core/api/filter', this.filterRules).then((response) => {})
+            },
         },
 
         computed: {
@@ -300,6 +304,16 @@
                 })
 
                 return data
+            },
+
+            filterRules() {
+                return {
+                    name: 'Test',
+                    content: 'Test Filter',
+                    rules: [
+                        this.filters,
+                    ],
+                }
             },
 
             dimmerClasses() {
