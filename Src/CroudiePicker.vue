@@ -2,10 +2,12 @@
     <span>
         <div>
             <strong>
-                <a @click="show">Croudie Picker</a>
+                <slot name="croudie_picker_button">
+                    <a @click="show">Croudie Picker</a>
+                </slot>
             </strong>
         </div>
-        <div v-if="selected.length">
+        <div v-if="show_selected && selected.length">
             <span v-for="croudie in selected">
                 <img class="ui mini circular inline image" :title="croudie.name" :src="croudie.avatar">
             </span>
@@ -171,6 +173,11 @@
 
     export default {
         props: {
+            show_selected: {
+                default() {
+                    return false
+                },
+            },
             selected: {
                 default() {
                     return []
@@ -203,9 +210,9 @@
 
         data() {
             return {
+                croudies : [],
                 loading: true,
                 showModal: false,
-                croudies: [],
                 search: '',
                 days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
                 rate: 0,
