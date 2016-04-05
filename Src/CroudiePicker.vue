@@ -1,11 +1,11 @@
 <template>
     <span>
-        <div>
+        <div v-if="show_picker_button">
             <strong>
                 <a @click="show">Croudie Picker</a>
             </strong>
         </div>
-        <div v-if="selected.length">
+        <div v-if="show_selected && selected.length">
             <span v-for="croudie in selected">
                 <img class="ui mini circular inline image" :title="croudie.name" :src="croudie.avatar">
             </span>
@@ -15,10 +15,10 @@
             <div class="ui basic segment">
                 <div class="ui top aligned two column grid">
                     <div class="column">
-                        <h2 class="ui header">Croudie Picker</h2>
+                        <h2 class="ui header">Croudie Picker <span v-show="filteredCroudies.length > 1">({{filteredCroudies.length}} found)</span></h2>
                     </div>
                     <div class="right floated right aligned column">
-                        <a v-if="filteredCroudies.length > 1" transition="fade" class="ui blue basic button" @click="addAll">Select all {{ filteredCroudies.length }} croudies</a>
+                        <a v-if="filteredCroudies.length > 1 && filteredCroudies.length < 50" transition="fade" class="ui blue basic button" @click="addAll">Select all {{ filteredCroudies.length }} croudies</a>
                         <a class="ui blue basic button" @click="showModal = false">Continue</a>
                     </div>
                 </div>
@@ -172,6 +172,17 @@
 
     export default {
         props: {
+
+            show_picker_button : {
+                default() {
+                    return true
+                },
+            },
+            show_selected: {
+                default() {
+                    return false
+                },
+            },
             selected: {
                 default() {
                     return []
@@ -198,15 +209,17 @@
                 },
             },
             croudie: {
-                default: '',
+                default() {
+                    return ''
+                },
             },
         },
 
         data() {
             return {
+                croudies : [],
                 loading: true,
                 showModal: false,
-                croudies: [],
                 search: '',
                 days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
                 rate: 15,
@@ -264,7 +277,7 @@
 
             hideSelected(data) {
                 return data.filter(croudie => {
-                    return this.selected.map((s) => s.id).indexOf(croudie.id) === -1
+                    return this.selected.map((s) => s.code).indexOf(croudie.code) === -1
                 })
             },
 
@@ -333,6 +346,11 @@
                     this.rate = 15
                 }
             },
+
+        events : {
+            'open-croudie-picker'() {
+                this.show()
+            }
         },
     }
 </script>
