@@ -209,7 +209,7 @@
                 croudies: [],
                 search: '',
                 days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
-                rate: 0,
+                rate: 15,
                 limit: 5,
 
                 searchAddress: {
@@ -323,6 +323,14 @@
                     active: this.loading,
                     inverted:true,
                     dimmer: true,
+                }
+            },
+        },
+
+        watch: {
+            croudie(value) {
+                if (value === '0' && this.rate === '0') {
+                    this.rate = 15
                 }
             },
         },
