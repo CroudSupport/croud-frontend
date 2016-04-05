@@ -1,10 +1,8 @@
 <template>
     <span>
-        <div>
+        <div v-if="show_picker_button">
             <strong>
-                <slot name="croudie_picker_button">
-                    <a @click="show">Croudie Picker</a>
-                </slot>
+                <a @click="show">Croudie Picker</a>
             </strong>
         </div>
         <div v-if="show_selected && selected.length">
@@ -17,10 +15,10 @@
             <div class="ui basic segment">
                 <div class="ui top aligned two column grid">
                     <div class="column">
-                        <h2 class="ui header">Croudie Picker</h2>
+                        <h2 class="ui header">Croudie Picker <span v-show="filteredCroudies.length > 1">({{filteredCroudies.length}} found)</span></h2>
                     </div>
                     <div class="right floated right aligned column">
-                        <a v-if="filteredCroudies.length > 1" transition="fade" class="ui blue basic button" @click="addAll">Select all {{ filteredCroudies.length }} croudies</a>
+                        <a v-if="filteredCroudies.length > 1 && filteredCroudies.length < 50" transition="fade" class="ui blue basic button" @click="addAll">Select all {{ filteredCroudies.length }} croudies</a>
                         <a class="ui blue basic button" @click="showModal = false">Continue</a>
                     </div>
                 </div>
@@ -174,6 +172,12 @@
 
     export default {
         props: {
+
+            show_picker_button : {
+                default() {
+                    return true
+                },
+            },
             show_selected: {
                 default() {
                     return false
@@ -205,7 +209,9 @@
                 },
             },
             croudie: {
-                default: '',
+                default() {
+                    return ''
+                },
             },
         },
 
@@ -271,7 +277,7 @@
 
             hideSelected(data) {
                 return data.filter(croudie => {
-                    return this.selected.map((s) => s.id).indexOf(croudie.id) === -1
+                    return this.selected.map((s) => s.code).indexOf(croudie.code) === -1
                 })
             },
 
@@ -332,6 +338,14 @@
                     dimmer: true,
                 }
             },
+        },
+
+        events : {
+
+            'open-croudie-picker' : function() {
+                this.show()
+            }
+
         },
     }
 </script>
