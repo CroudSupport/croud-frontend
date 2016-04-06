@@ -346,11 +346,21 @@
                     this.rate = 15
                 }
             },
+        },
 
         events : {
             'open-croudie-picker'() {
                 this.show()
-            }
+            },
+            'filter-change'(filter) {
+                this.currentFilter = filter
+                this.language = filter.rules.data[0].languages.data
+                this.country = filter.rules.data[0].countries.data
+                this.qualification = filter.rules.data[0].qualifications.data
+                this.availability = filter.rules.data[0].availability.data.map(day => day.day_of_week)
+                this.croudie = filter.rules.data[0].system
+                this.rate = parseFloat(filter.rules.data[0].rate, 10)
+            },
         },
     }
 </script>
