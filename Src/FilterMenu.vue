@@ -77,9 +77,9 @@
 
         methods: {
             refresh() {
-                this.filterResource.get({order_by: 'updated_at,desc'}).then(response => {
+                this.$http.get('/core/api/me?include=filters').then(response => {
                     this.limit = 3
-                    this.$set('filters', response.data.data)
+                    this.$set('filters', response.data.data.filters.data)
                 })
             },
 
