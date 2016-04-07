@@ -77,7 +77,7 @@
 
         methods: {
             refresh() {
-                this.$http.get('/core/api/me?include=filters').then(response => {
+                this.$http.get('/core/api/user/me?include=filters').then(response => {
                     this.limit = 3
                     this.$set('filters', response.data.data.filters.data)
                 })
