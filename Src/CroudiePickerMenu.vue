@@ -33,7 +33,7 @@
         </div>
         <div class="item" v-if="croudie === 0">
             <div class="header">Hourly Rate <small>(<= £{{ rate }})</small></div>
-            <input style="width:100%" type="range" min="1" max="50" defaultValue="15" v-model="rate" debounce="500"/>
+            <input style="width:100%" type="range" min="1" max="50" v-model="rate" debounce="500"/>
         </div>
         <input v-else value="0" v-model="rate" hidden/>
         <div class="item">
