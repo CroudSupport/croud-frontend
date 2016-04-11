@@ -1,10 +1,12 @@
 var CroudiePicker = require('./Src/CroudiePicker.vue'),
-    MultiSearch = require('./Src/MultiSearch.vue')
+    MultiSearch = require('./Src/MultiSearch.vue'),
+    Paginator = require('./Src/Paginator.vue')
 
 module.exports = {
     install: function (Vue, options) {
         Vue.component('croudie-picker', CroudiePicker);
         Vue.component('multi-search', MultiSearch);
+        Vue.component('paginator', Paginator);
 
         Vue.directive('chosen', {
             twoWay: true, // note the two-way binding
