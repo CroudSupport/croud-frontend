@@ -34,6 +34,9 @@ module.exports = {
             }
         });
 
+        Vue.filter('splitCamelCase', function (value) {
+            return value.split(/(?=[A-Z])/).join(" ");
+        });
 
         Vue.filter('toOrdinal', function (n) {
             var s = ["th", "st", "nd", "rd"], v = n % 100;
