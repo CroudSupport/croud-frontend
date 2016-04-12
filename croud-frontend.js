@@ -1,11 +1,13 @@
 var CroudiePicker = require('./Src/CroudiePicker.vue'),
     MultiSearch = require('./Src/MultiSearch.vue'),
+    PopulatedSearch = require('./Src/PopulatedSearch.vue'),
     Paginator = require('./Src/Paginator.vue')
 
 module.exports = {
     install: function (Vue, options) {
         Vue.component('croudie-picker', CroudiePicker);
         Vue.component('multi-search', MultiSearch);
+        Vue.component('populated-search', PopulatedSearch);
         Vue.component('paginator', Paginator);
 
         Vue.directive('chosen', {
