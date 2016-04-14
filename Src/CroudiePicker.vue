@@ -1,7 +1,11 @@
-<style>
+<style scoped>
     .ui.accordion.menu a.title.item {
         padding: 0.92857143em 1.14285714em;
         background: rgba(0, 0, 0, 0.05);
+    }
+
+    .ui.fluid.card {
+        cursor: pointer;
     }
 </style>
 
@@ -72,7 +76,11 @@
                     <div v-for="croudie in filteredCroudies | limitBy limit" @click="add(croudie)" class="ui fluid yellow card" >
                         <div class="left aligned content">
                             <img v-if="croudie.avatar" class="left floated mini circular ui image" :src="croudie.avatar" />
-
+                            <span v-if="croudie.rate" class="right floated time">
+                                <div class="ui basic label">
+                                  &pound;{{croudie.rate}}
+                                </div>
+                            </span>
                             <div class="header">{{ croudie.name }}</div>
                             <div class="meta">{{ croudie.email }}</div>
                         </div>
