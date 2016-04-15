@@ -4,7 +4,9 @@
   "description": "A collection of generic front-end resources for crouyd applications",
   "main": "croud-frontend.js",
   "browserify": {
-    "transform": ["vueify"]
+    "transform": [
+      "vueify"
+    ]
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -32,5 +34,8 @@
   "homepage": "https://github.com/CroudSupport/croud-frontend#readme",
   "devDependencies": {
     "semantic-ui": "^2.1.8"
+  },
+  "dependencies": {
+    "fullcalendar": "^2.6.1"
   }
 }
