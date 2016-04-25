@@ -111,6 +111,9 @@
                     <div v-for="croudie in filteredCroudies | limitBy limit" @click="add(croudie)" class="ui fluid yellow card" >
                         <div class="left aligned content">
                             <img v-if="croudie.avatar" class="left floated mini circular ui image" :src="croudie.avatar" />
+                            <span v-if="croudie.system" class="right floated time">
+                                <div title="Supercroud" class="ui circular basic blue label">S</div>
+                            </span>
                             <span v-if="croudie.rate" class="right floated time">
                                 <div class="ui basic blue label">&pound;{{croudie.rate}}</div>
                             </span>
