@@ -3,9 +3,16 @@
 .item.active {
     background: rgba(0, 0, 0, 0.0470588)
 }
+
+.filter.item {
+    font-size:0.86rem;
+    padding-top:10px;
+    padding-bottom:10px;
+}
+
 </style>
 <template>
-    <div class="menu">
+    <div>
         <div class="item">
             <div class="ui transparent icon input">
                 <input class="prompt" type="text" placeholder="Search filters..." v-model="search" debounce="500">
@@ -13,10 +20,13 @@
                 <i v-else class="search link icon"></i>
             </div>
         </div>
+        <div class="item">
+            <semantic-checkbox :model.sync="mine" label="Just show my filters" type="toggle"></semantic-checkbox>
+        </div>
         <!-- <a v-for="filter in filters | filterBy search | orderBy 'updated_at.date' -1 | limitBy limit" class="item" @click="useFilter(filter)"> -->
-        <div v-for="filter in filters | filterBy search | orderBy 'updated_at.date' -1 | limitBy limit" :class="filterClass(filter)">
-            <strong class="ui blue header" @click="useFilter(filter)">{{ filter.name }} </strong>
-            <semantic-icon icon="close" colour="red" link @click.prevent="deleteFilter(filter)"></semantic-icon>
+        <div v-for="filter in activeFilters | filterBy search | orderBy 'updated_at.date' -1 | limitBy limit" :class="filterClass(filter)">
+            <a href="#" class="ui blue header" @click.prevent="useFilter(filter)">{{ filter.name }} </a> (Created by {{showUsername(filter)}})
+            <semantic-icon v-if="current_user && current_user.code == filter.user.data.code" icon="close" colour="red" link @click.prevent="deleteFilter(filter)"></semantic-icon>
             <div><small>{{ filter.updated_at.date | moment "calendar" }}</small></div>
         </div>
         <a v-if="filters.length > limit" class="item" @click="loadMore">
@@ -46,11 +56,17 @@
                 },
             },
             rules: {},
-            selected_users: []
+            selected_users: [],
+            current_user : {
+                default () {
+                    return null
+                }
+            }
         },
 
         data() {
             return {
+                mine : false,
                 use_selected_users: false,
                 filters: [],
                 search: '',
@@ -84,7 +100,7 @@
         methods: {
 
             filterClass(filter) {
-                return (this.currentfilter && filter.id === this.currentfilter.id) ? 'item active' : 'item'
+                return (this.currentfilter && filter.id === this.currentfilter.id) ? 'filter item active' : 'filter item'
             },
 
             refresh() {
@@ -96,6 +112,10 @@
 
             loadMore() {
                 this.limit += 3
+            },
+
+            showUsername(filter) {
+                return filter.user.data.code === this.current_user.code ? 'you' : filter.user.data.name
             },
 
             saveFilter() {
@@ -147,6 +167,14 @@
         },
 
         computed: {
+
+            activeFilters() {
+                if (!this.mine) return this.filters
+                return _.filter(this.filters, (filter) => {
+                    return filter.user.data.code === this.current_user.code
+                })
+            },
+
             filterRules() {
                 return {
                     name: this.currentfilter ? this.currentfilter.name : '',

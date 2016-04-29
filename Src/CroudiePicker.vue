@@ -25,6 +25,10 @@
         transition: all .4s ease;
     }
 
+    .extra.content .label {
+        margin-bottom:2px
+    }
+
 </style>
 
 <template>
@@ -52,15 +56,22 @@
                         <div v-el:save_filter_popup class="ui custom popup text-left save-filter-popup">
                             <div class="header">Save this filter</div>
                             <div class="content">
+
+                                <div class="item well well-blank well-small" v-if="currentfilter && currentfilter.user.data.code != current_user.code" class="ui segment basic">
+                                    This filter was created by {{currentfilter.user.data.name}}. When saved a copy will be created.
+                                </div>
+
                                 <div class="item well well-blank well-small">
                                     <input class="textbox block" placeholder="Filter name.." v-model="new_filter_name">
                                 </div>
+
                                 <div class="column">
-                                    <a href="x#" class="actionLink small light push-left" @click.prevent="cancelFilter()">Cancel</a>
+                                    <a href="#" class="actionLink small light push-left" @click.prevent="cancelFilter()">Cancel</a>
                                 </div>
+
                                 <div class="column text-right">
-                                    <a href="#" v-show="currentfilter" class="actionLink small alt" @click.prevent="updateFilter()">Update Filter</a>
-                                    &nbsp;
+                                    <a href="#" v-show="currentfilter && currentfilter.user.data.code == current_user.code" class="actionLink small alt" @click.prevent="updateFilter()">Update Filter</a>
+
                                     <a href="#" class="actionLink small yellow" @click.prevent="saveFilter()">Save As New</a>
                                 </div>
                             </div>
@@ -78,7 +89,14 @@
                                 Rules
                             </a>
                             <div class="active content">
-                                <croudie-picker-menu :croudie.sync="croudie" :language.sync="language" :country.sync="country" :qualification.sync="qualification" :availability.sync="availability" :rate.sync="rate" :search.sync="search"></croudie-picker-menu>
+                                <croudie-picker-menu
+                                :croudie.sync="croudie"
+                                :language.sync="language"
+                                :country.sync="country"
+                                :qualification.sync="qualification"
+                                :availability.sync="availability"
+                                :rate.sync="rate" :search.sync="search">
+                            </croudie-picker-menu>
                             </div>
 
                             <a class="title item">
@@ -86,7 +104,13 @@
                                 Filters
                             </a>
                             <div class="content">
-                                <filter-menu :show_filter_popup.sync="show_filter_popup" :currentfilter.sync="currentfilter" :rules.sync="filters" :selected_users.sync="selected"></filter-menu>
+                                <filter-menu
+                                :current_user="current_user"
+                                :show_filter_popup.sync="show_filter_popup"
+                                :currentfilter.sync="currentfilter"
+                                :rules.sync="filters"
+                                :selected_users.sync="selected">
+                            </filter-menu>
                             </div>
                         </div>
                     </div>
@@ -123,6 +147,9 @@
                         <div class="extra content right aligned" v-if="croudie.languages.data.length ">
                             <div class="ui basic label tiny" v-for="language in croudie.languages.data" track-by="$index">{{language}}</div>
                         </div>
+                        <!-- <div class="extra content right aligned" v-if="croudie.qualifications.data.length ">
+                            <div class="ui basic label blue tiny" v-for="qualification in croudie.qualifications.data" track-by="$index">{{qualification}}</div>
+                        </div> -->
                     </div>
                     <a v-if="filteredCroudies.length > limit" class="ui circular basic icon button" @click="loadMore">
                         Show more
@@ -196,6 +223,11 @@
                     return null
                 },
             },
+            current_user: {
+                default() {
+                    return null
+                }
+            }
         },
 
         data() {
@@ -322,6 +354,9 @@
             },
 
             filteredCroudies() {
+
+                if (!this.croudies || !this.croudies.length) return []
+
                 const filterBy = Vue.filter('filterBy')
 
                 return filterBy(this.hideSelected(this.croudies), this.search, 'name')
@@ -373,13 +408,13 @@
 
                 this.currentfilter = filter
                 this.new_filter_name = filter.name
-                this.selected = filter.rules.data[0].users.data
-                this.language = filter.rules.data[0].languages.data
-                this.country = filter.rules.data[0].countries.data
-                this.qualification = filter.rules.data[0].qualifications.data
-                this.availability = filter.rules.data[0].availability.data.map(day => day.day_of_week)
-                this.croudie = filter.rules.data[0].system
-                this.rate = parseFloat(filter.rules.data[0].rate, 10)
+                this.selected = filter.rules.data.length > 0 ? filter.rules.data[0].users.data : []
+                this.language = filter.rules.data.length > 0 ? filter.rules.data[0].languages.data : []
+                this.country = filter.rules.data.length > 0 ? filter.rules.data[0].countries.data : []
+                this.qualification = filter.rules.data.length > 0 ? filter.rules.data[0].qualifications.data : []
+                this.availability = filter.rules.data.length > 0 ? filter.rules.data[0].availability.data.map(day => day.day_of_week) : []
+                this.croudie = filter.rules.data.length > 0 ? filter.rules.data[0].system : null
+                this.rate = filter.rules.data > 0 ? parseFloat(filter.rules.data[0].rate, 10) : 15
             },
         },
     }
