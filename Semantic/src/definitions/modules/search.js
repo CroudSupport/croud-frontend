@@ -286,18 +286,31 @@ $.fn.search = function(parameters) {
         },
 
         setup: {
-          api: function() {
+          api: function(searchTerm) {
             var
               apiSettings = {
-                debug     : settings.debug,
-                on        : false,
-                cache     : 'local',
-                action    : 'search',
-                onError   : module.error
+                debug             : false,
+                on                : false,
+                cache             : true,
+                interruptRequests : true,
+                action            : 'search',
+                urlData           : {
+                  query : searchTerm
+                },
+                onSuccess         : function(response) {
+                  module.parse.response.call(element, response, searchTerm);
+                },
+                onAbort           : function(response) {
+                },
+                onFailure         : function() {
+                  module.displayMessage(error.serverError);
+                },
+                onError           : module.error
               },
               searchHTML
             ;
-            module.verbose('First request, initializing API');
+            $.extend(true, apiSettings, settings.apiSettings);
+            module.verbose('Setuping up API request', apiSettings);
             $module.api(apiSettings);
           }
         },
@@ -489,27 +502,11 @@ $.fn.search = function(parameters) {
             });
           },
           remote: function(searchTerm) {
-            var
-              apiSettings = {
-                onSuccess : function(response) {
-                  module.parse.response.call(element, response, searchTerm);
-                },
-                onFailure: function() {
-                  module.displayMessage(error.serverError);
-                },
-                urlData: {
-                  query: searchTerm
-                }
-              }
-            ;
-            if( !$module.api('get request') ) {
-              module.setup.api();
+            if($module.api('is loading')) {
+              $module.api('abort');
             }
-            $.extend(true, apiSettings, settings.apiSettings);
-            module.debug('Executing search', apiSettings);
-            module.cancel.query();
+            module.setup.api(searchTerm);
             $module
-              .api('setting', apiSettings)
               .api('query')
             ;
           },
@@ -910,7 +907,7 @@ $.fn.search = function(parameters) {
           }
         },
         debug: function() {
-          if(settings.debug) {
+          if(!settings.silent && settings.debug) {
             if(settings.performance) {
               module.performance.log(arguments);
             }
@@ -921,7 +918,7 @@ $.fn.search = function(parameters) {
           }
         },
         verbose: function() {
-          if(settings.verbose && settings.debug) {
+          if(!settings.silent && settings.verbose && settings.debug) {
             if(settings.performance) {
               module.performance.log(arguments);
             }
@@ -932,8 +929,10 @@ $.fn.search = function(parameters) {
           }
         },
         error: function() {
-          module.error = Function.prototype.bind.call(console.error, console, settings.name + ':');
-          module.error.apply(console, arguments);
+          if(!settings.silent) {
+            module.error = Function.prototype.bind.call(console.error, console, settings.name + ':');
+            module.error.apply(console, arguments);
+          }
         },
         performance: {
           log: function(message) {
@@ -1070,6 +1069,7 @@ $.fn.search.settings = {
   name           : 'Search',
   namespace      : 'search',
 
+  silent         : false,
   debug          : false,
   verbose        : false,
   performance    : true,

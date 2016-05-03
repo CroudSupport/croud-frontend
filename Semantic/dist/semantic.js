@@ -12570,18 +12570,31 @@ $.fn.search = function(parameters) {
         },
 
         setup: {
-          api: function() {
+          api: function(searchTerm) {
             var
               apiSettings = {
-                debug     : settings.debug,
-                on        : false,
-                cache     : 'local',
-                action    : 'search',
-                onError   : module.error
+                debug             : false,
+                on                : false,
+                cache             : true,
+                interruptRequests : true,
+                action            : 'search',
+                urlData           : {
+                  query : searchTerm
+                },
+                onSuccess         : function(response) {
+                  module.parse.response.call(element, response, searchTerm);
+                },
+                onAbort           : function(response) {
+                },
+                onFailure         : function() {
+                  module.displayMessage(error.serverError);
+                },
+                onError           : module.error
               },
               searchHTML
             ;
-            module.verbose('First request, initializing API');
+            $.extend(true, apiSettings, settings.apiSettings);
+            module.verbose('Setuping up API request', apiSettings);
             $module.api(apiSettings);
           }
         },
@@ -12773,27 +12786,11 @@ $.fn.search = function(parameters) {
             });
           },
           remote: function(searchTerm) {
-            var
-              apiSettings = {
-                onSuccess : function(response) {
-                  module.parse.response.call(element, response, searchTerm);
-                },
-                onFailure: function() {
-                  module.displayMessage(error.serverError);
-                },
-                urlData: {
-                  query: searchTerm
-                }
-              }
-            ;
-            if( !$module.api('get request') ) {
-              module.setup.api();
+            if($module.api('is loading')) {
+              $module.api('abort');
             }
-            $.extend(true, apiSettings, settings.apiSettings);
-            module.debug('Executing search', apiSettings);
-            module.cancel.query();
+            module.setup.api(searchTerm);
             $module
-              .api('setting', apiSettings)
               .api('query')
             ;
           },
@@ -13194,7 +13191,7 @@ $.fn.search = function(parameters) {
           }
         },
         debug: function() {
-          if(settings.debug) {
+          if(!settings.silent && settings.debug) {
             if(settings.performance) {
               module.performance.log(arguments);
             }
@@ -13205,7 +13202,7 @@ $.fn.search = function(parameters) {
           }
         },
         verbose: function() {
-          if(settings.verbose && settings.debug) {
+          if(!settings.silent && settings.verbose && settings.debug) {
             if(settings.performance) {
               module.performance.log(arguments);
             }
@@ -13216,8 +13213,10 @@ $.fn.search = function(parameters) {
           }
         },
         error: function() {
-          module.error = Function.prototype.bind.call(console.error, console, settings.name + ':');
-          module.error.apply(console, arguments);
+          if(!settings.silent) {
+            module.error = Function.prototype.bind.call(console.error, console, settings.name + ':');
+            module.error.apply(console, arguments);
+          }
         },
         performance: {
           log: function(message) {
@@ -13354,6 +13353,7 @@ $.fn.search.settings = {
   name           : 'Search',
   namespace      : 'search',
 
+  silent         : false,
   debug          : false,
   verbose        : false,
   performance    : true,
@@ -18551,7 +18551,7 @@ $.api = $.fn.api = function(parameters) {
             response = sessionStorage.getItem(url);
             module.debug('Using cached response', url, response);
             response = module.decode.json(response);
-            return false;
+            return response;
           }
         },
         write: {
@@ -18643,7 +18643,6 @@ $.api = $.fn.api = function(parameters) {
 
           module.debug('Querying URL', ajaxSettings.url);
           module.verbose('Using AJAX settings', ajaxSettings);
-
           if(settings.cache === 'local' && module.read.cachedResponse(url)) {
             module.debug('Response returned from local cache');
             module.request = module.create.request();
@@ -18686,6 +18685,9 @@ $.api = $.fn.api = function(parameters) {
           disabled: function() {
             return ($module.filter(selector.disabled).length > 0);
           },
+          expectingJSON: function() {
+            return settings.dataType !== 'json' && settings.dataType !== 'jsonp';
+          },
           form: function() {
             return $module.is('form') || $context.is('form');
           },
@@ -18696,7 +18698,10 @@ $.api = $.fn.api = function(parameters) {
             return $module.is('input');
           },
           loading: function() {
-            return (module.request && module.request.state() == 'pending');
+            return (module.request)
+              ? (module.request.state() == 'pending')
+              : false
+            ;
           },
           abortedRequest: function(xhr) {
             if(xhr && xhr.readyState !== undefined && xhr.readyState === 0) {
@@ -18709,7 +18714,7 @@ $.api = $.fn.api = function(parameters) {
             }
           },
           validResponse: function(response) {
-            if( (settings.dataType !== 'json' && settings.dataType !== 'jsonp') || !$.isFunction(settings.successTest) ) {
+            if( (!module.is.expectingJSON()) || !$.isFunction(settings.successTest) ) {
               module.verbose('Response is not JSON, skipping validation', settings.successTest, response);
               return true;
             }
@@ -18879,7 +18884,9 @@ $.api = $.fn.api = function(parameters) {
                 elapsedTime        = (new Date().getTime() - requestStartTime),
                 timeLeft           = (settings.loadingDuration - elapsedTime),
                 translatedResponse = ( $.isFunction(settings.onResponse) )
-                  ? settings.onResponse.call(context, $.extend(true, {}, response))
+                  ? module.is.expectingJSON()
+                    ? settings.onResponse.call(context, $.extend(true, {}, response))
+                    : settings.onResponse.call(conetxt, response)
                   : false
               ;
               timeLeft = (timeLeft > 0)
@@ -18960,11 +18967,12 @@ $.api = $.fn.api = function(parameters) {
               if(status == 'aborted') {
                 module.debug('XHR Aborted (Most likely caused by page navigation or CORS Policy)', status, httpMessage);
                 settings.onAbort.call(context, status, $module, xhr);
+                return true;
               }
               else if(status == 'invalid') {
                 module.debug('JSON did not pass success test. A server-side error has most likely occurred', response);
               }
-              else if(status == 'error')  {
+              else if(status == 'error') {
                 if(xhr !== undefined) {
                   module.debug('XHR produced a server error', status, httpMessage);
                   // make sure we have an error to display to console
@@ -19088,7 +19096,7 @@ $.api = $.fn.api = function(parameters) {
         get: {
           responseFromXHR: function(xhr) {
             return $.isPlainObject(xhr)
-              ? (settings.dataType == 'json' || settings.dataType == 'jsonp')
+              ? (module.is.expectingJSON())
                 ? module.decode.json(xhr.responseText)
                 : xhr.responseText
               : false
@@ -19133,6 +19141,9 @@ $.api = $.fn.api = function(parameters) {
             if(runSettings === undefined) {
               module.error(error.noReturnedValue);
             }
+            if(runSettings === false) {
+              return runSettings;
+            }
             return (runSettings !== undefined)
               ? $.extend(true, {}, runSettings)
               : $.extend(true, {}, settings)
@@ -19159,7 +19170,7 @@ $.api = $.fn.api = function(parameters) {
               if( module.is.input() ) {
                 data.value = $module.val();
               }
-              else if( !module.is.form() ) {
+              else if( module.is.form() ) {
 
               }
               else {
@@ -19238,7 +19249,12 @@ $.api = $.fn.api = function(parameters) {
             $.extend(true, settings, name);
           }
           else if(value !== undefined) {
-            settings[name] = value;
+            if($.isPlainObject(settings[name])) {
+              $.extend(true, settings[name], value);
+            }
+            else {
+              settings[name] = value;
+            }
           }
           else {
             return settings[name];
@@ -19256,7 +19272,7 @@ $.api = $.fn.api = function(parameters) {
           }
         },
         debug: function() {
-          if(settings.debug) {
+          if(!settings.silent && settings.debug) {
             if(settings.performance) {
               module.performance.log(arguments);
             }
@@ -19267,7 +19283,7 @@ $.api = $.fn.api = function(parameters) {
           }
         },
         verbose: function() {
-          if(settings.verbose && settings.debug) {
+          if(!settings.silent && settings.verbose && settings.debug) {
             if(settings.performance) {
               module.performance.log(arguments);
             }
@@ -19278,8 +19294,10 @@ $.api = $.fn.api = function(parameters) {
           }
         },
         error: function() {
-          module.error = Function.prototype.bind.call(console.error, console, settings.name + ':');
-          module.error.apply(console, arguments);
+          if(!settings.silent) {
+            module.error = Function.prototype.bind.call(console.error, console, settings.name + ':');
+            module.error.apply(console, arguments);
+          }
         },
         performance: {
           log: function(message) {
