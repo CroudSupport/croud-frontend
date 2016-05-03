@@ -4626,7 +4626,6 @@ input::selection {
 .ui.justified.container {
   text-align: justify;
   -webkit-hyphens: auto;
-  -moz-hyphens: auto;
   -ms-hyphens: auto;
   hyphens: auto;
 }
@@ -17128,6 +17127,7 @@ ol.ui.horizontal.list li:before,
   -webkit-box-align: center;
   -webkit-align-items: center;
   -ms-flex-align: center;
+  -ms-grid-row-align: center;
   align-items: center;
 }
 
@@ -18742,7 +18742,6 @@ ol.ui.horizontal.list li:before,
 .ui.grid > .row > .justified.column {
   text-align: justify;
   -webkit-hyphens: auto;
-  -moz-hyphens: auto;
   -ms-hyphens: auto;
   hyphens: auto;
 }
@@ -26290,6 +26289,7 @@ a.ui.card:hover,
   -webkit-box-align: center;
   -webkit-align-items: center;
   -ms-flex-align: center;
+  -ms-grid-row-align: center;
   align-items: center;
 }
 
@@ -26312,6 +26312,7 @@ a.ui.card:hover,
   -webkit-box-align: center;
   -webkit-align-items: center;
   -ms-flex-align: center;
+  -ms-grid-row-align: center;
   align-items: center;
   max-width: none;
   margin: 1em 0em;
