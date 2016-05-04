@@ -139,7 +139,7 @@
                                 <div title="Supercroud" class="ui circular basic blue label">S</div>
                             </span>
                             <span v-if="croudie.rate" class="right floated time">
-                                <div class="ui basic blue label">&pound;{{croudie.rate}}</div>
+                                <div class="ui basic blue label">{{ croudie.rate | currency '£' }}</div>
                             </span>
                             <div class="header">{{ croudie.name }}</div>
                             <div class="meta">{{ croudie.email }}</div>
