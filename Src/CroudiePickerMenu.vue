@@ -37,6 +37,9 @@
         </div>
         <input v-else value="0" v-model="rate" hidden/>
         <div class="item">
+            <input v-model="online" type="date">
+        </div>
+        <div class="item">
             <a class="title">
                 <i class="dropdown icon"></i>
                 <div class="ui mini blue circular label">{{ language.length }}</div>
@@ -67,6 +70,17 @@
             </a>
             <div class="content">
                 <populated-search placeholder="Search qualifications..." :url="searchQualification.url" :items.sync="qualification"></populated-search>
+            </div>
+        </div>
+        <div class="item">
+            <a class="title">
+                <i class="dropdown icon"></i>
+                <div class="ui mini blue circular label">{{ client.length }}</div>
+                Clients
+                <small v-if="client.length" @click.stop="client = []">clear</small>
+            </a>
+            <div class="content">
+                <multi-search placeholder="Search clients..." :search="searchClient" :items.sync="client"></multi-search>
             </div>
         </div>
         <div class="item">
@@ -110,12 +124,23 @@
                     return []
                 },
             },
+            client: {
+                default() {
+                    return []
+                },
+            },
             availability: {
                 default() {
                     return []
                 },
             },
             croudie: {
+                default() {
+                    return null
+                },
+            },
+
+            online: {
                 default() {
                     return null
                 },
@@ -157,6 +182,14 @@
 
                 searchQualification: {
                     url: '/core/api/qualification/?search={query}',
+                    fields: {
+                        results: 'data',
+                        title: 'name',
+                    },
+                },
+
+                searchClient: {
+                    url: '/core/api/client/?search={query}',
                     fields: {
                         results: 'data',
                         title: 'name',

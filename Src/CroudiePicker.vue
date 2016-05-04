@@ -94,6 +94,8 @@
                                 :language.sync="language"
                                 :country.sync="country"
                                 :qualification.sync="qualification"
+                                :client.sync="client"
+                                :online.sync="online"
                                 :availability.sync="availability"
                                 :rate.sync="rate" :search.sync="search">
                             </croudie-picker-menu>
@@ -132,10 +134,11 @@
                     <div :class="dimmerClasses">
                         <div class="ui text large loader">Loading</div>
                     </div>
-                    <div v-for="croudie in filteredCroudies | limitBy limit" @click="add(croudie)" class="ui fluid yellow card" >
+                    <div v-for="croudie in filteredCroudies | limitBy limit" @click="add(croudie)" class="ui fluid grey card" >
                         <div class="left aligned content">
                             <img v-if="croudie.avatar" class="left floated mini circular ui image" :src="croudie.avatar" />
                             <span v-if="croudie.system" class="right floated time">
+
                                 <div title="Supercroud" class="ui circular basic blue label">S</div>
                             </span>
                             <span v-if="croudie.rate" class="right floated time">
@@ -143,9 +146,14 @@
                             </span>
                             <div class="header">{{ croudie.name }}</div>
                             <div class="meta">{{ croudie.email }}</div>
+                            <div class="meta" v-if="croudie.hours">{{ Math.round(croudie.hours) }} {{ Math.round(croudie.hours) | pluralize 'hour' }} worked this month</div>
                         </div>
-                        <div class="extra content right aligned" v-if="croudie.languages.data.length ">
+                        <div class="extra content right aligned" v-if="croudie.languages.data.length">
                             <div class="ui basic label tiny" v-for="language in croudie.languages.data" track-by="$index">{{language}}</div>
+                        </div>
+                        <div class="ui inverted indicating bottom attached progress" :data-percent="100 -  Math.round((croudie.hours / 29) * 100)" :title="Math.round(croudie.hours) + ' hours worked this month'">
+                            <div class="bar"></div>
+                            <div class="label">{{ croudie.hours }}</div>
                         </div>
                         <!-- <div class="extra content right aligned" v-if="croudie.qualifications.data.length ">
                             <div class="ui basic label blue tiny" v-for="qualification in croudie.qualifications.data" track-by="$index">{{qualification}}</div>
@@ -213,9 +221,19 @@
                     return []
                 },
             },
+            client: {
+                default() {
+                    return []
+                },
+            },
             availability: {
                 default() {
                     return []
+                },
+            },
+            online: {
+                default() {
+                    return null
                 },
             },
             croudie: {
@@ -250,6 +268,7 @@
                         this.limit = 5
                         this.$nextTick(() => {
                             this.$broadcast('refresh-modal')
+                            $('.progress').progress()
                         })
                     })
                }, 50),
@@ -278,8 +297,7 @@
                     inst.show_filter_popup = false
                 }
 
-            });
-
+            })
         },
 
         components: {
@@ -290,6 +308,7 @@
         methods: {
             show() {
                 this.showModal = true
+                $('.progress').progress()
             },
 
             saveFilter() {
@@ -324,6 +343,7 @@
                 this.limit += 5
                 this.$nextTick(() => {
                     this.$broadcast('refresh-modal')
+                    $('.progress').progress()
                 })
             },
 
@@ -357,6 +377,10 @@
 
                 if (!this.croudies || !this.croudies.length) return []
 
+                this.$nextTick(() => {
+                    $('.progress').progress()
+                })
+
                 const filterBy = Vue.filter('filterBy')
 
                 return filterBy(this.hideSelected(this.croudies), this.search, 'name')
@@ -367,11 +391,13 @@
                     languages: this.language.map((language) => language.id),
                     countries: this.country.map((country) => country.id),
                     qualifications: this.qualification.map((qualification) => qualification.id),
+                    clients: this.client.map((client) => client.id),
                     availability: this.availability,
                     tags: this.tags,
                     system: this.croudie,
                     rate: this.rate,
                     include: true,
+                    online: this.online,
                 }
 
                 this.refresh(data)
