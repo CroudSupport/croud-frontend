@@ -66,7 +66,7 @@
                 <small v-if="qualification.length" @click.stop="qualification = []">clear</small>
             </a>
             <div class="content">
-                <multi-search placeholder="Search qualifications..." :search="searchQualification" :items.sync="qualification"></multi-search>
+                <populated-search placeholder="Search qualifications..." :url="searchQualification.url" :items.sync="qualification"></populated-search>
             </div>
         </div>
         <div class="item">
