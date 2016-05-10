@@ -156,7 +156,7 @@
                 },
 
                 searchQualification: {
-                    url: '/core/api/qualification/?search={query}',
+                    url: '/core/api/qualification?per_page=100&order_by=name,asc',
                     fields: {
                         results: 'data',
                         title: 'name',
