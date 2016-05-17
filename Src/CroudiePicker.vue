@@ -227,6 +227,12 @@
                 default() {
                     return null
                 }
+            },
+
+            frontEndFiltering: {
+                default() {
+                    return true
+                }
             }
         },
 
@@ -359,11 +365,34 @@
 
                 const filterBy = Vue.filter('filterBy')
 
-                return filterBy(this.hideSelected(this.croudies), this.search, ['name_clean', 'name'])
+                return filterBy(this.hideSelected(this.croudies.filter(croudie => {
+                    if (!this.frontEndFiltering) {
+                        return true
+                    }
+
+                    return (!this.language.length || (croudie.languages.data.length && this.language.some(language => {
+                        return croudie.languages.data.indexOf(language.name) !== -1
+                    })))
+
+                    && (!this.country.length || (croudie.countries.data.length && this.country.some(country => {
+                        return croudie.countries.data.indexOf(country.name) !== -1
+                    })))
+
+                    && (!this.qualification.length || (croudie.qualifications.data.length && this.qualification.some(qualification => {
+                        return croudie.qualifications.data.indexOf(qualification.name) !== -1
+                    })))
+
+                    && (!this.availability.length || (croudie.availability.data.length && this.availability.some(availability => {
+                        return croudie.availability.data.indexOf(availability) !== -1
+                    })))
+
+                    && (this.croudie === null || croudie.system === this.croudie)
+                    && (this.rate === '0' || croudie.rate <= this.rate)
+                })), this.search, ['name_clean', 'name'])
             },
 
             filters() {
-                const data = {
+                const data = this.frontEndFiltering ? { include: true } : {
                     languages: this.language.map((language) => language.id),
                     countries: this.country.map((country) => country.id),
                     qualifications: this.qualification.map((qualification) => qualification.id),
