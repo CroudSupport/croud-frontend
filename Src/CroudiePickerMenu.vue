@@ -1,3 +1,10 @@
+<style>
+    .close.icon {
+        float: none;
+        line-height: inherit;
+    }
+</style>
+
 <template>
     <div class="accordion">
         <div class="item">
