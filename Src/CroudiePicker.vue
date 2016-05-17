@@ -359,7 +359,7 @@
 
                 const filterBy = Vue.filter('filterBy')
 
-                return filterBy(this.hideSelected(this.croudies), this.search, 'in', 'name_clean', 'name')
+                return filterBy(this.hideSelected(this.croudies), this.search, ['name_clean', 'name'])
             },
 
             filters() {
