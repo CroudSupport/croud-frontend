@@ -60,7 +60,7 @@
                 this.loading = false
                 this.$set('searchItems', response.data.data)
 
-                $this = this
+                const $this = this
                 $(this.$els.dropdown).dropdown({
                     fullTextSearch: true,
                     onChange(value) {
