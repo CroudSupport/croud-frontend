@@ -62,7 +62,7 @@
                 <small v-if="country.length" @click.stop="country = []">clear</small>
             </a>
             <div class="content">
-                <multi-search :flag="true" placeholder="Search countries..." :search="searchAddress" :items.sync="country"></multi-search>
+                <multi-search placeholder="Search countries..." :search="searchAddress" :items.sync="country"></multi-search>
             </div>
         </div>
         <div class="item">
