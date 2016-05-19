@@ -1,7 +1,11 @@
-<style>
+<style scoped>
     .close.icon {
         float: none;
         line-height: inherit;
+    }
+
+    .right.floated.icon {
+        float: right !important;
     }
 </style>
 
@@ -36,7 +40,32 @@
                     </div>
                 </div>
             </div>
-
+        </div>
+        <div class="item" v-if="croudie === 0">
+            <i @click="online = null" v-show="online" class="right floated red close link icon"></i>
+            <div class="header">Online</div>
+            <div class="ui form">
+                <div class="grouped fields">
+                    <div class="field">
+                        <div class="ui radio checkbox">
+                            <input type="radio" v-model="online" value="days">
+                            <label>Last 24 Hours</label>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="ui radio checkbox">
+                            <input type="radio" v-model="online" value="weeks">
+                            <label>Last Week</label>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="ui radio checkbox">
+                            <input type="radio" v-model="online" value="months">
+                            <label>Last Month</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
         <div class="item" v-if="croudie === 0">
             <div class="header">Hourly Rate <small>(<= £{{ rate }})</small></div>
@@ -79,6 +108,17 @@
         <div class="item">
             <a class="title">
                 <i class="dropdown icon"></i>
+                <div class="ui mini blue circular label">{{ client.length }}</div>
+                Clients
+                <small v-if="client.length" @click.stop="client = []">clear</small>
+            </a>
+            <div class="content">
+                <multi-search placeholder="Search clients..." :search="searchClient" :items.sync="client"></multi-search>
+            </div>
+        </div>
+        <div class="item">
+            <a class="title">
+                <i class="dropdown icon"></i>
                 <div class="ui mini blue circular label">{{ availability.length }}</div>
                 Availability
                 <small v-if="availability.length" @click.stop="availability = []">clear</small>
@@ -100,6 +140,8 @@
 </template>
 
 <script>
+    import moment from 'moment'
+
     export default {
         props: {
             language: {
@@ -117,6 +159,11 @@
                     return []
                 },
             },
+            client: {
+                default() {
+                    return []
+                },
+            },
             availability: {
                 default() {
                     return []
@@ -127,7 +174,11 @@
                     return null
                 },
             },
-
+            online: {
+                default() {
+                    return null
+                },
+            },
             rate: {
                 default() {
                     return 15
@@ -164,6 +215,14 @@
 
                 searchQualification: {
                     url: '/core/api/qualification?per_page=100&order_by=name,asc',
+                    fields: {
+                        results: 'data',
+                        title: 'name',
+                    },
+                },
+
+                searchClient: {
+                    url: '/core/api/client/?search={query}',
                     fields: {
                         results: 'data',
                         title: 'name',

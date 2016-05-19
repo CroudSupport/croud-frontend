@@ -91,6 +91,8 @@
                             <div class="active content">
                                 <croudie-picker-menu
                                 :croudie.sync="croudie"
+                                :client.sync="client"
+                                :online.sync="online"
                                 :language.sync="language"
                                 :country.sync="country"
                                 :qualification.sync="qualification"
@@ -132,7 +134,7 @@
                     <div :class="dimmerClasses">
                         <div class="ui text large loader">Loading</div>
                     </div>
-                    <div v-for="croudie in filteredCroudies | limitBy limit" @click="add(croudie)" class="ui fluid yellow card" >
+                    <div v-for="croudie in filteredCroudies | limitBy limit" @click="add(croudie)" class="ui fluid grey card" >
                         <div class="left aligned content">
                             <img v-if="croudie.avatar" class="left floated mini circular ui image" :src="croudie.avatar" />
                             <span v-if="croudie.system" class="right floated time">
@@ -146,6 +148,10 @@
                         </div>
                         <div class="extra content right aligned" v-if="croudie.languages.data.length ">
                             <div class="ui basic label tiny" v-for="language in croudie.languages.data" track-by="$index">{{language}}</div>
+                        </div>
+                        <div class="ui inverted indicating bottom attached progress" :data-percent="100 -  Math.round((croudie.minutes / 60 / hourLimit) * 100)" :title="Math.round(croudie.minutes / 60) + ' hours worked this month'">
+                            <div class="bar"></div>
+                            <div class="label">{{ croudie.minutes / 60 }}</div>
                         </div>
                         <!-- <div class="extra content right aligned" v-if="croudie.qualifications.data.length ">
                             <div class="ui basic label blue tiny" v-for="qualification in croudie.qualifications.data" track-by="$index">{{qualification}}</div>
@@ -177,6 +183,7 @@
 <script>
     import Vue from 'vue'
     import _ from 'underscore'
+    import moment from 'moment'
     import FilterMenu from './FilterMenu.vue'
     import CroudiePickerMenu from './CroudiePickerMenu.vue'
 
@@ -213,6 +220,11 @@
                     return []
                 },
             },
+            client: {
+                default() {
+                    return []
+                },
+            },
             availability: {
                 default() {
                     return []
@@ -224,6 +236,11 @@
                 },
             },
             current_user: {
+                default() {
+                    return null
+                }
+            },
+            online: {
                 default() {
                     return null
                 }
@@ -245,6 +262,7 @@
                 search: '',
                 rate: 15,
                 limit: 5,
+                hourLimit: 29,
                 show_filter_popup : false,
                 new_filter_name: null,
                 new_filter_users: false,
@@ -256,6 +274,7 @@
                         this.limit = 5
                         this.$nextTick(() => {
                             this.$broadcast('refresh-modal')
+                            $('.progress').progress()
                         })
                     })
                }, 50),
@@ -296,6 +315,7 @@
         methods: {
             show() {
                 this.showModal = true
+                $('.progress').progress()
             },
 
             saveFilter() {
@@ -330,6 +350,7 @@
                 this.limit += 5
                 this.$nextTick(() => {
                     this.$broadcast('refresh-modal')
+                    $('.progress').progress()
                 })
             },
 
@@ -363,6 +384,10 @@
 
                 if (!this.croudies || !this.croudies.length) return []
 
+                this.$nextTick(() => {
+                    $('.progress').progress()
+                })
+
                 const filterBy = Vue.filter('filterBy')
 
                 return filterBy(this.hideSelected(this.croudies.filter(croudie => {
@@ -386,20 +411,26 @@
                         return croudie.availability.data.indexOf(availability) !== -1
                     })))
 
+                    && ((!this.online || this.croudie !== 0) || moment().subtract(1, this.online).isBefore(croudie.last_login))
                     && (this.croudie === null || croudie.system === this.croudie)
                     && (this.rate === '0' || croudie.rate <= this.rate)
                 })), this.search, ['name_clean', 'name'])
             },
 
             filters() {
-                const data = this.frontEndFiltering ? { include: true } : {
+                const data = this.frontEndFiltering ? {
+                    include: true,
+                    clients: this.client.map(client => client.id),
+                } : {
                     languages: this.language.map((language) => language.id),
                     countries: this.country.map((country) => country.id),
                     qualifications: this.qualification.map((qualification) => qualification.id),
+                    clients: this.client.map(client => client.id),
                     availability: this.availability,
                     tags: this.tags,
                     system: this.croudie,
                     rate: this.rate,
+                    online: this.online,
                     include: true,
                 }
 
