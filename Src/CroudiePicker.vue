@@ -93,6 +93,7 @@
                                 :croudie.sync="croudie"
                                 :client.sync="client"
                                 :online.sync="online"
+                                :date-filter.sync="dateFilter"
                                 :language.sync="language"
                                 :country.sync="country"
                                 :qualification.sync="qualification"
@@ -243,6 +244,11 @@
             online: {
                 default() {
                     return null
+                }
+            },
+            dateFilter: {
+                default() {
+                    return 'last_login'
                 }
             },
 
@@ -411,7 +417,7 @@
                         return croudie.availability.data.indexOf(availability) !== -1
                     })))
 
-                    && ((!this.online || this.croudie !== 0) || moment().subtract(1, this.online).isBefore(croudie.last_login))
+                    && ((!this.online || this.croudie !== 0) || moment().subtract(1, this.online).isBefore(croudie[this.dateFilter]))
                     && (this.croudie === null || croudie.system === this.croudie)
                     && (this.rate === '0' || croudie.rate <= this.rate)
                 })), this.search, ['name_clean', 'name'])

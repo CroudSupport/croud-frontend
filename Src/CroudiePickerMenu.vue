@@ -42,26 +42,32 @@
             </div>
         </div>
         <div class="item" v-if="croudie === 0">
-            <i @click="online = null" v-show="online" class="right floated red close link icon"></i>
-            <div class="header">Online</div>
+            <div class="header">
+                Activity
+                <small @click="online = null" v-show="online">clear</small>
+            </div>
             <div class="ui form">
+                <select class="ui dropdown" v-model="dateFilter">
+                    <option value="last_login">Last Login</option>
+                    <option value="last_taskable">Last Task Completed</option>
+                </select>
                 <div class="grouped fields">
                     <div class="field">
                         <div class="ui radio checkbox">
                             <input type="radio" v-model="online" value="days">
-                            <label>Last 24 Hours</label>
+                            <label>24 Hours ago</label>
                         </div>
                     </div>
                     <div class="field">
                         <div class="ui radio checkbox">
                             <input type="radio" v-model="online" value="weeks">
-                            <label>Last Week</label>
+                            <label>A Week ago</label>
                         </div>
                     </div>
                     <div class="field">
                         <div class="ui radio checkbox">
                             <input type="radio" v-model="online" value="months">
-                            <label>Last Month</label>
+                            <label>A Month ago</label>
                         </div>
                     </div>
                 </div>
@@ -175,6 +181,11 @@
                 },
             },
             online: {
+                default() {
+                    return null
+                },
+            },
+            dateFilter: {
                 default() {
                     return null
                 },
