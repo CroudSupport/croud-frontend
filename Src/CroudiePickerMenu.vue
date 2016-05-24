@@ -4,8 +4,8 @@
         line-height: inherit;
     }
 
-    .right.floated.icon {
-        float: right !important;
+    .header.pointer {
+        cursor: pointer;
     }
 </style>
 
@@ -42,32 +42,29 @@
             </div>
         </div>
         <div class="item" v-if="croudie === 0">
-            <div class="header">
-                Activity
-                <small @click="online = null" v-show="online">clear</small>
+            <i @click="online = null" v-show="online" class="ui right floated red close link icon"></i>
+            <div>
+                <semantic-form-dropdown inline :options="dateFilters" :model.sync="dateFilter"></semantic-form-dropdown>
+                within the last...
             </div>
             <div class="ui form">
-                <select class="ui dropdown" v-model="dateFilter">
-                    <option value="last_login">Last Login</option>
-                    <option value="last_taskable">Last Task Completed</option>
-                </select>
                 <div class="grouped fields">
                     <div class="field">
                         <div class="ui radio checkbox">
                             <input type="radio" v-model="online" value="days">
-                            <label>24 Hours ago</label>
+                            <label>Day</label>
                         </div>
                     </div>
                     <div class="field">
                         <div class="ui radio checkbox">
                             <input type="radio" v-model="online" value="weeks">
-                            <label>A Week ago</label>
+                            <label>Week</label>
                         </div>
                     </div>
                     <div class="field">
                         <div class="ui radio checkbox">
                             <input type="radio" v-model="online" value="months">
-                            <label>A Month ago</label>
+                            <label>Month</label>
                         </div>
                     </div>
                 </div>
@@ -206,6 +203,16 @@
         data() {
             return {
                 days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+                dateFilters: [
+                    {
+                        id: 'last_login',
+                        name: 'Logged in',
+                    },
+                    {
+                        id: 'last_taskable',
+                        name: 'Completed a Task',
+                    },
+                ],
                 searchAddress: {
                     url: '/core/api/country/?search={query}',
                     fields: {
