@@ -7,6 +7,11 @@
         fill: #f5f5f5;
     }
 
+    #daily-pointer {
+        stroke: #FFD156;
+        stroke-width: 10;
+    }
+
     #timeline-events .rows rect:hover {
         fill: rgba(255, 209, 86, 0.4)
     }
@@ -65,10 +70,6 @@
         width: 300px
     }
 
-    #timeline-search-header {
-        margin:-20px -10px 30px -10px
-    }
-
     #timeline-sidebar {
         position:absolute;
         padding-top:30px;
@@ -112,6 +113,7 @@
          <div id="timeline-header">
              <div id="timeline-index">
                  <svg id="" :width="svgWidth" height="30">
+
                      <g transform="translate(40, 0)">
                          <g>
                              <g v-for="line in gridLines">
@@ -131,6 +133,7 @@
                             <rect v-for="block in groupings" x:"0" :y="blockHeight * $index" width="100%" :height="blockHeight" stroke="#f5f5f5" stroke-width="2"></rect>
                         </g>
                         <g class="graph" transform="translate(40, 0)">
+                            <line id="daily-pointer" :x1='dailyWidth' :x2="dailyWidth" y1='0%' y2='100%'></line>
                             <g>
                                 <g v-for="line in gridLines">
                                     <line :x1='$index * scaleWidth' y1='0%' :x2='$index * scaleWidth' y2='100%' style='stroke: rgba(200, 200, 200, 0.3); stroke-width: 1;'></line>
@@ -194,7 +197,7 @@
                 highestDuration: 0,
                 hourWidth: 29.1,
                 totalWidth: 873 - 120,
-                blockHeight: 40,
+                blockHeight: 45,
                 scale: 'days',
                 scaleWidth: 29.1,
                 groupings: [],
@@ -205,7 +208,6 @@
         },
 
         computed: {
-
             categoryOptions() {
                 let categories = this.categories.map((category)=>{
                     return {
@@ -246,6 +248,7 @@
                     return event
                 })
 
+                limits.current = moment().diff(limits.start, this.scale)
                 limits.range = moment(limits.end).diff(limits.start, this.scale)
 
                 return limits
@@ -272,6 +275,13 @@
                     event.y = (this.groupings.indexOf(event.title) * this.blockHeight) + 7.5
                     return event
                 })
+            },
+
+            dailyWidth() {
+
+                if (!this.hourWidth || !this.limits.current) return 0
+
+                return this.hourWidth * this.limits.current
             },
 
             svgWidth() {
@@ -365,6 +375,7 @@
                 sidebar = $('#timeline-sidebar'),
                 events = document.getElementById('event-types'),
                 heading = document.getElementById('timeline-index'),
+
                 resize = () =>
                 {
                     height = ($window.height() - (this.top + this.bottom)),
@@ -378,9 +389,10 @@
                     events.style['margin-top'] = '-' + obj.scrollTop() + 'px'
                 }
 
-
                 resize()
                 scroll()
+                
+                obj.scrollLeft(this.dailyWidth - ((obj.width() / 2) - (this.hourWidth * 2)))
 
                 $window.on('resize', resize)
                 obj.on('scroll', scroll)
