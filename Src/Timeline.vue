@@ -113,7 +113,6 @@
          <div id="timeline-header">
              <div id="timeline-index">
                  <svg id="" :width="svgWidth" height="30">
-
                      <g transform="translate(40, 0)">
                          <g>
                              <g v-for="line in gridLines">
@@ -122,6 +121,7 @@
                                  <text v-if="$index % smartGrids === 0" text-anchor="middle" :x="$index * hourWidth" y="50%">{{ line }}</text>
                              </g>
                          </g>
+                     </g>
                  </svg>
             </div>
         </div>
