@@ -1,5 +1,4 @@
-<style scoped>
-
+<style>
     .rows rect {
         fill: #fff;
     }
@@ -19,17 +18,11 @@
     .blocks rect {
         fill: #c6dafc;
         transition: all 400ms;
-        /*filter: url(#dropshadow);*/
     }
     .block:hover {
         stroke: #ddd;
         stroke-width: 5px;
         cursor: pointer;
-    }
-
-    #timeline-container {
-        /*height:500px;
-        width:400px;*/
     }
 
     #timeline {
@@ -100,13 +93,13 @@
 
          <div id="timeline-sidebar">
              <svg id="event-types" v-el:svg :width="300" :height='limits.height'>
-                 <g class="rows" transform="translate(0, 0)">
-                     <rect v-for="block in groupings" x:"0" :y="blockHeight * $index" width="100%" :height="blockHeight" stroke="#f5f5f5" stroke-width="2"></rect>
-                 </g>
-                 <g v-for="block in groupings" transform="translate(0, 0)">
-                     <title>{{ block }}</title>
-                     <text @click="select(block)" text-anchor="right" :x="5" :y="($index * blockHeight) + 5 +(blockHeight / 2)">{{ block | truncate 35 }}</text>
-                 </g>
+                <g class="rows" transform="translate(0, 0)">
+                    <rect v-for="block in groupings" x:"0" :y="blockHeight * $index" width="100%" :height="blockHeight" stroke="#f5f5f5" stroke-width="2"></rect>
+                </g>
+                <g v-for="block in groupings" transform="translate(0, 0)">
+                    <title>{{ block }}</title>
+                    <text @click="select(block)" text-anchor="right" :x="5" :y="($index * blockHeight) + 5 +(blockHeight / 2)">{{ block | truncate 35 }}</text>
+                </g>
              </svg>
         </div>
 
