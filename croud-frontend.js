@@ -7,8 +7,8 @@ var CroudiePicker = require('./Src/CroudiePicker.vue'),
 
 module.exports = {
     install: function (Vue, options) {
-        Vue.component('croudie-timeline', Timeline);
-        Vue.component('croudie-calendar', Calendar);
+        Vue.component('croud-timeline', Timeline);
+        Vue.component('croud-calendar', Calendar);
         Vue.component('croudie-picker', CroudiePicker);
         Vue.component('multi-search', MultiSearch);
         Vue.component('populated-search', PopulatedSearch);
