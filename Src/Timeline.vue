@@ -91,66 +91,6 @@
             </div>
          </div>
 
-         <div id="timeline-sidebar">
-             <svg id="event-types" v-el:svg :width="300" :height='limits.height'>
-                <g class="rows" transform="translate(0, 0)">
-                    <rect v-for="block in groupings" x:"0" :y="blockHeight * $index" width="100%" :height="blockHeight" stroke="#f5f5f5" stroke-width="2"></rect>
-                </g>
-                <g v-for="block in groupings" transform="translate(0, 0)">
-                    <title>{{ block }}</title>
-                    <text @click="select(block)" text-anchor="right" :x="5" :y="($index * blockHeight) + 5 +(blockHeight / 2)">{{ block | truncate 35 }}</text>
-                </g>
-             </svg>
-        </div>
-
-         <div id="timeline-header">
-             <div id="timeline-index">
-                 <svg id="" :width="svgWidth" height="30">
-                     <g transform="translate(40, 0)">
-                         <g>
-                             <g v-for="line in gridLines">
-                                 <line :x1='$index * scaleWidth' y1='95%' :x2='$index * scaleWidth' y2='100%' style='stroke: rgba(234, 243, 234, 0.5); stroke-width: 1;'></line>
-                                 <line v-if="$index % smartGrids === 0" :x1='$index * scaleWidth' y1='65%' :x2='$index * scaleWidth' y2='99%' style='stroke: rgba(230, 230, 230, 0.7); stroke-width: 5;'></line>
-                                 <text v-if="$index % smartGrids === 0" text-anchor="middle" :x="$index * hourWidth" y="50%">{{ line }}</text>
-                             </g>
-                         </g>
-                     </g>
-                 </svg>
-            </div>
-        </div>
-        <div id="timeline-container">
-            <div id="timeline">
-                <svg id="timeline-events" v-el:svg :width="svgWidth" :height='limits.height'>
-                    <g>
-                        <g class="rows">
-                            <rect v-for="block in groupings" x:"0" :y="blockHeight * $index" width="100%" :height="blockHeight" stroke="#f5f5f5" stroke-width="2"></rect>
-                        </g>
-                        <g class="graph" transform="translate(40, 0)">
-                            <line id="daily-pointer" :x1='dailyWidth' :x2="dailyWidth" y1='0%' y2='100%'></line>
-                            <g>
-                                <g v-for="line in gridLines">
-                                    <line :x1='$index * scaleWidth' y1='0%' :x2='$index * scaleWidth' y2='100%' style='stroke: rgba(200, 200, 200, 0.3); stroke-width: 1;'></line>
-                                    <line v-if="$index % smartGrids === 0" :x1='$index * scaleWidth' y1='0%' :x2='$index * scaleWidth' y2='100%' style='stroke: rgba(230, 230, 230, 0.7); stroke-width: 5;'></line>
-                                    <!-- <text v-if="$index % smartGrids === 0" text-anchor="middle" :x="$index * hourWidth" y="99.5%">{{ line }}</text> -->
-                                </g>
-                            </g>
-
-                            <g class="paths">
-                                <path v-for="link in linkPaths | orderBy 'critical'" :d="link.path" :class="{critical: link.critical}" />
-                            </g>
-
-                            <g class="blocks" >
-                                <g class="block" v-for="block in nodes">
-                                    <rect @click="select(block)" rx="3" ry="3" :x="block.x" :y='block.y' :width='block.width' :height='block.height' :style="{fill: block.label}">
-                                        <title>{{ block.title }}</title>
-                                    </rect>
-                                </g>
-                            </g>
-                        </g>
-                    </g>
-                </svg>
-            </div>
-        </div>
     </div>
 </template>
 
