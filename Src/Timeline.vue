@@ -391,7 +391,9 @@
 
                 resize()
                 scroll()
-                
+
+                // console.log(this.dailyWidth , (this.dailyWidth + (obj.width)));
+
                 obj.scrollLeft(this.dailyWidth - ((obj.width() / 2) - (this.hourWidth * 2)))
 
                 $window.on('resize', resize)

@@ -1,12 +1,14 @@
 var CroudiePicker = require('./Src/CroudiePicker.vue'),
     MultiSearch = require('./Src/MultiSearch.vue'),
     PopulatedSearch = require('./Src/PopulatedSearch.vue'),
-    Paginator = require('./Src/Paginator.vue')
-    // Timeline = require('./Src/Timeline.vue')
+    Paginator = require('./Src/Paginator.vue'),
+    Calendar = require('./Src/Calendar.vue'),
+    Timeline = require('./Src/Timeline.vue')
 
 module.exports = {
     install: function (Vue, options) {
         // Vue.component('croudie-timeline', Timeline);
+        Vue.component('croudie-calendar', Calendar);
         Vue.component('croudie-picker', CroudiePicker);
         Vue.component('multi-search', MultiSearch);
         Vue.component('populated-search', PopulatedSearch);
