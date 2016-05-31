@@ -101,7 +101,7 @@
          <div id="timeline-sidebar">
              <svg id="event-types" v-el:svg :width="300" :height='limits.height'>
                  <g class="rows" transform="translate(0, 0)">
-                     <rect v-for="block in groupings" x:"0" :y="blockHeight * $index" width="100%" :height="blockHeight" stroke="#f5f5f5" stroke-width="2"></rect>
+                     <rect v-for="block in groupings" x="0" :y="blockHeight * $index" width="100%" :height="blockHeight" stroke="#f5f5f5" stroke-width="2"></rect>
                  </g>
                  <g v-for="block in groupings" transform="translate(0, 0)">
                      <title>{{ block }}</title>
@@ -130,7 +130,7 @@
                 <svg id="timeline-events" v-el:svg :width="svgWidth" :height='limits.height'>
                     <g>
                         <g class="rows">
-                            <rect v-for="block in groupings" x:"0" :y="blockHeight * $index" width="100%" :height="blockHeight" stroke="#f5f5f5" stroke-width="2"></rect>
+                            <rect v-for="block in groupings" x="0" :y="blockHeight * $index" width="100%" :height="blockHeight" stroke="#f5f5f5" stroke-width="2"></rect>
                         </g>
                         <g class="graph" transform="translate(40, 0)">
                             <line id="daily-pointer" :x1='dailyWidth' :x2="dailyWidth" y1='0%' y2='100%'></line>

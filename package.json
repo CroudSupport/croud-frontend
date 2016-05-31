@@ -36,6 +36,7 @@
     "semantic-ui": "^2.1.8"
   },
   "dependencies": {
-    "fullcalendar": "^2.6.1"
+    "fullcalendar": "^2.6.1",
+    "moment": "2.12.0"
   }
 }
