@@ -4,9 +4,11 @@ var CroudiePicker = require('./Src/CroudiePicker.vue'),
     Paginator = require('./Src/Paginator.vue'),
     Calendar = require('./Src/Calendar.vue'),
     Timeline = require('./Src/Timeline.vue')
+    DatePicker = require('./Src/DatePicker.vue')
 
 module.exports = {
     install: function (Vue, options) {
+        Vue.component('croud-datepicker', DatePicker);
         Vue.component('croud-timeline', Timeline);
         Vue.component('croud-calendar', Calendar);
         Vue.component('croudie-picker', CroudiePicker);
