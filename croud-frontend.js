@@ -7,6 +7,7 @@ var CroudiePicker = require('./Src/CroudiePicker.vue'),
     DatePicker = require('./Src/DatePicker.vue')
     Messages = require('./Src/Messages.vue')
     MessagesEditor = require('./Src/MessagesEditor.vue')
+    var Dropzone = require('./Src/Dropzone.vue');
 
 module.exports = {
     install: function (Vue, options) {
@@ -19,6 +20,7 @@ module.exports = {
         Vue.component('multi-search', MultiSearch);
         Vue.component('populated-search', PopulatedSearch);
         Vue.component('paginator', Paginator);
+        Vue.component('croud-dropzone', Dropzone);
 
         Vue.directive('chosen', {
             twoWay: true, // note the two-way binding
