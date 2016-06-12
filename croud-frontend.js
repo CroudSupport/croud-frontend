@@ -5,9 +5,13 @@ var CroudiePicker = require('./Src/CroudiePicker.vue'),
     Calendar = require('./Src/Calendar.vue'),
     Timeline = require('./Src/Timeline.vue')
     DatePicker = require('./Src/DatePicker.vue')
+    Messages = require('./Src/Messages.vue')
+    MessagesEditor = require('./Src/MessagesEditor.vue')
 
 module.exports = {
     install: function (Vue, options) {
+        Vue.component('croud-messages', Messages);
+        Vue.component('croud-messages-editor', MessagesEditor);
         Vue.component('croud-datepicker', DatePicker);
         Vue.component('croud-timeline', Timeline);
         Vue.component('croud-calendar', Calendar);
