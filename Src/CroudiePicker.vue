@@ -44,11 +44,11 @@
             </span>
         </div>
         <semantic-modal size="large" :scrolling="true" :active.sync="showModal">
-            <div v-if="filters"></div>
+            <div v-if="refreshFilters"></div>
             <div class="ui basic segment">
                 <div class="ui top aligned two column grid">
                     <div class="column">
-                        <h2 class="ui header">Croudie Picker <small v-show="filteredCroudies.length > 1">({{filteredCroudies.length}} found)</small></h2>
+                        <h2 class="ui header">Croudie Picker <small v-show="filteredCroudies.length > 1">({{ meta.pagination.total }} found)</small></h2>
                     </div>
                     <div class="right floated right aligned column">
                         <a v-if="filteredCroudies.length > 1 && filteredCroudies.length < 50" transition="fade" class="ui blue basic button" @click="addAll">Select all {{ filteredCroudies.length }} croudies</a>
@@ -150,15 +150,14 @@
                         <div class="extra content right aligned" v-if="croudie.languages.data.length ">
                             <div class="ui basic label tiny" v-for="language in croudie.languages.data" track-by="$index">{{language}}</div>
                         </div>
-                        <div class="ui inverted indicating bottom attached progress" :data-percent="100 -  Math.round((croudie.minutes / 60 / hourLimit) * 100)" :title="Math.round(croudie.minutes / 60) + ' hours worked this month'">
+                        <div class="ui inverted indicating bottom attached progress" :data-percent="Math.min(100, (croudie.score / meta.max) * 100)" :title="Math.round(croudie.minutes / 60) + ' hours worked this month'">
                             <div class="bar"></div>
-                            <div class="label">{{ croudie.minutes / 60 }}</div>
                         </div>
                         <!-- <div class="extra content right aligned" v-if="croudie.qualifications.data.length ">
                             <div class="ui basic label blue tiny" v-for="qualification in croudie.qualifications.data" track-by="$index">{{qualification}}</div>
                         </div> -->
                     </div>
-                    <a v-if="filteredCroudies.length > limit" class="ui circular basic icon button" @click="loadMore">
+                    <a v-if="filteredCroudies.length > limit || meta.pagination.current_page < meta.pagination.total_pages" class="ui circular basic icon button" @click="loadMore">
                         Show more
                         <semantic-icon class="dropdown"></semantic-icon>
                     </a>
@@ -206,6 +205,12 @@
                     return []
                 },
             },
+            rawFilters: {
+                default() {
+                    return {}
+                },
+            },
+
             language: {
                 default() {
                     return []
@@ -254,13 +259,19 @@
 
             frontEndFiltering: {
                 default() {
-                    return true
+                    return false
                 }
             }
         },
 
         data() {
             return {
+                meta: {
+                    score: 1,
+                    pagination: {
+                        total: 1,
+                    },
+                },
                 croudies: [],
                 loading: true,
                 showModal: false,
@@ -276,6 +287,7 @@
                     this.loading = true
                     this.$http.post('/core/api/user/pick', data).then((response) => {
                         this.$set('croudies', response.data.data)
+                        this.$set('meta', response.data.meta)
                         this.loading = false
                         this.limit = 5
                         this.$nextTick(() => {
@@ -346,6 +358,15 @@
 
             add(croudie) {
                 this.selected.push(croudie)
+                this.$http.post('/core/api/analytics', {
+                    data: {
+                        search: this.filters,
+                        user_id: croudie.id,
+                        user_name: croudie.name,
+                        pick: 1,
+                    },
+                    type: 'croudie_pick',
+                })
             },
 
             remove(croudie) {
@@ -354,6 +375,7 @@
 
             loadMore() {
                 this.limit += 5
+                this.$emit('load-more')
                 this.$nextTick(() => {
                     this.$broadcast('refresh-modal')
                     $('.progress').progress()
@@ -394,9 +416,9 @@
                     $('.progress').progress()
                 })
 
-                const filterBy = Vue.filter('filterBy')
-
-                return filterBy(this.hideSelected(this.croudies.filter(croudie => {
+                //const filterBy = Vue.filter('filterBy')
+                //return this.hideSelected(this.croudies)
+                return this.hideSelected(this.croudies.filter(croudie => {
                     if (!this.frontEndFiltering) {
                         return true
                     }
@@ -420,11 +442,15 @@
                     && ((!this.online || this.croudie !== 0) || moment().subtract(1, this.online).isBefore(croudie[this.dateFilter]))
                     && (this.croudie === null || croudie.system === this.croudie)
                     && (this.rate === '0' || croudie.rate <= this.rate)
-                })), this.search, ['name_clean', 'name'])
+                }))
+            },
+
+            refreshFilters() {
+                this.refresh(this.filters)
             },
 
             filters() {
-                const data = this.frontEndFiltering ? {
+                return this.frontEndFiltering ? {
                     include: true,
                     clients: this.client.map(client => client.id),
                 } : {
@@ -438,11 +464,8 @@
                     rate: this.rate,
                     online: this.online,
                     include: true,
+                    search: this.search,
                 }
-
-                this.refresh(data)
-
-                return data
             },
 
             dimmerClasses() {
@@ -481,6 +504,20 @@
                 this.availability = filter.rules.data.length > 0 ? filter.rules.data[0].availability.data.map(day => day.day_of_week) : []
                 this.croudie = filter.rules.data.length > 0 ? filter.rules.data[0].system : null
                 this.rate = filter.rules.data > 0 ? parseFloat(filter.rules.data[0].rate, 10) : 15
+            },
+
+            'load-more'() {
+                const data = this.filters
+                data.page = this.meta.pagination.current_page + 1
+
+                this.$http.post('/core/api/user/pick', data).then((response) => {
+                    this.croudies.push.apply(this.croudies, response.data.data)
+                    this.$set('meta', response.data.meta)
+                    this.$nextTick(() => {
+                        this.$broadcast('refresh-modal')
+                        $('.progress').progress()
+                    })
+                })
             },
         },
     }
