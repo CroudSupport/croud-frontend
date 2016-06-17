@@ -1,7 +1,7 @@
 <template>
     <div>
         <semantic-search v-if="local" :local="local" :fields="search.fields" :placeholder="placeholder"></semantic-search>
-        <semantic-search v-else :url="search.url" :fields="search.fields" :placeholder="placeholder"></semantic-search>
+        <semantic-search v-else :url="search.url" :fields="search.fields" :placeholder="placeholder" :search-delay="searchDelay"></semantic-search>
         <div class="ui list">
             <div class="item" v-for="item in items">
                 <semantic-label size="small" colour="blue" >
@@ -23,6 +23,9 @@
             items: {},
             flag: {
                 default: false,
+            },
+            searchDelay: {
+                default: 500,
             },
         },
 
