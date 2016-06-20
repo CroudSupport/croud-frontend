@@ -3,13 +3,13 @@ var CroudiePicker = require('./Src/CroudiePicker.vue'),
     PopulatedSearch = require('./Src/PopulatedSearch.vue'),
     Paginator = require('./Src/Paginator.vue'),
     Calendar = require('./Src/Calendar.vue'),
-    Timeline = require('./Src/Timeline.vue')
-    DatePicker = require('./Src/DatePicker.vue')
-    Messages = require('./Src/Messages.vue')
+    Timeline = require('./Src/Timeline.vue'),
+    DatePicker = require('./Src/DatePicker.vue'),
+    Messages = require('./Src/Messages.vue'),
     MessagesEditor = require('./Src/MessagesEditor.vue'),
     Dropzone = require('./Src/Dropzone.vue'),
-    EventsForm = require('./Src/Events/Form.vue')
-    EventsView = require('./Src/Events/View.vue')
+    EventsForm = require('./Src/Events/Form.vue'),
+    EventsView = require('./Src/Events/View.vue'),
     ;
 
 module.exports = {
