@@ -6,8 +6,11 @@ var CroudiePicker = require('./Src/CroudiePicker.vue'),
     Timeline = require('./Src/Timeline.vue')
     DatePicker = require('./Src/DatePicker.vue')
     Messages = require('./Src/Messages.vue')
-    MessagesEditor = require('./Src/MessagesEditor.vue')
-    var Dropzone = require('./Src/Dropzone.vue');
+    MessagesEditor = require('./Src/MessagesEditor.vue'),
+    Dropzone = require('./Src/Dropzone.vue'),
+    EventsForm = require('./Src/Events/Form.vue')
+    EventsView = require('./Src/Events/View.vue')
+    ;
 
 module.exports = {
     install: function (Vue, options) {
@@ -21,6 +24,8 @@ module.exports = {
         Vue.component('populated-search', PopulatedSearch);
         Vue.component('paginator', Paginator);
         Vue.component('croud-dropzone', Dropzone);
+        Vue.component('croud-events-form', EventsForm);
+        Vue.component('croud-events-view', EventsView);
 
         Vue.directive('chosen', {
             twoWay: true, // note the two-way binding
@@ -171,12 +176,14 @@ module.exports = {
             return hours + ':' + minutes;
         });
 
+
         Vue.http = Vue.http != undefined ? Vue.http : {};
         Vue.http.headers = Vue.http.headers != undefined ? Vue.http.headers  : {};
         Vue.http.headers.common = Vue.http.headers.common != undefined? Vue.http.headers.common : {};
 
         Vue.http.headers.common['Time-Offset'] = (new Date()).getTimezoneOffset();
-        Vue.http.headers.common['Current-User'] = Croud.systemSettings.user.code;
-        
+        Vue.http.headers.common['Current-User'] = Croud.systemSettings && Croud.systemSettings.user ? Croud.systemSettings.user.code : '';
+
+        // Vue.http.headers.common['Authorization'] = 'Basic YXBpOnBhc3N3b3Jk';
     },
 }

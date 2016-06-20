@@ -5,7 +5,8 @@
   "main": "croud-frontend.js",
   "browserify": {
     "transform": [
-      "vueify"
+      "vueify",
+      "babelify"
     ]
   },
   "scripts": {
