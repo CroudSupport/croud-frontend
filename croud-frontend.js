@@ -170,5 +170,13 @@ module.exports = {
 
             return hours + ':' + minutes;
         });
+
+        Vue.http = Vue.http != undefined ? Vue.http : {};
+        Vue.http.headers = Vue.http.headers != undefined ? Vue.http.headers  : {};
+        Vue.http.headers.common = Vue.http.headers.common != undefined? Vue.http.headers.common : {};
+
+        Vue.http.headers.common['Time-Offset'] = (new Date()).getTimezoneOffset();
+        Vue.http.headers.common['Current-User'] = Croud.systemSettings.user.code;
+        
     },
 }
