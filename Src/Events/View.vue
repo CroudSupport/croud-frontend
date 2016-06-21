@@ -59,7 +59,6 @@
 </template>
 
 <script>
-import moment_tz from 'moment-timezone'
 export default {
     props: {
       editing: false,
