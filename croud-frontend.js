@@ -9,7 +9,7 @@ var CroudiePicker = require('./Src/CroudiePicker.vue'),
     MessagesEditor = require('./Src/MessagesEditor.vue'),
     Dropzone = require('./Src/Dropzone.vue'),
     EventsForm = require('./Src/Events/Form.vue'),
-    EventsView = require('./Src/Events/View.vue'),
+    EventsView = require('./Src/Events/View.vue')
     ;
 
 module.exports = {
@@ -176,7 +176,7 @@ module.exports = {
             return hours + ':' + minutes;
         });
 
-
+        Vue = Vue || {};
         Vue.http = Vue.http != undefined ? Vue.http : {};
         Vue.http.headers = Vue.http.headers != undefined ? Vue.http.headers  : {};
         Vue.http.headers.common = Vue.http.headers.common != undefined? Vue.http.headers.common : {};

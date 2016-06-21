@@ -3,6 +3,10 @@
   margin-bottom:20px;
 }
 
+.dz-drag-hover .formRow {
+  background: rgba(251, 189, 8, 0.2) !important;
+}
+
 input, textarea, select, .textbox, select.textbox{
   background: #fff !important;
   background-color: #fff !important;
@@ -12,25 +16,23 @@ input, textarea, select, .textbox, select.textbox{
   <div>
     <div class="formContainerGroups">
       <h2 class="yellow">Request Form</h2>
-      <!-- <pre>
-        {{event | json}}
-      </pre> -->
-      <div class="ui segment basic secondary">
-        <div class="formRow">
+      <div class="ui segment basic secondary form">
+        <div class="formRow" v-if="presets.length > 1 && !form_event.id">
           <label>Preset</label>
           <div class="blockMarginLeft">
-            <semantic-form-dropdown :options="presets" :model.sync="selected_preset_id" title_field="title"></semantic-form-dropdown>
+            <semantic-form-dropdown :options="presetList" :model.sync="selected_preset_id" title_field="title"></semantic-form-dropdown>
           </div>
         </div>
-        <div  v-for="field in selectedFields">
-          <pre>
-            {{field | json}}
-          </pre>
-          <component :is="field.field" :preset_id="selected_preset_id" :field="field" :index="$index"></component>
+        <div v-for="field in selected_fields">
+          <component :is="field.field" :preset_id="selected_preset_id" :field.sync="field" :index="$index"></component>
         </div>
       </div>
-      <div class="ui segment basic center aligned">
+      <div v-if="!event.id" class="ui segment basic center aligned">
         <button class="ui button yellow" @click="saveEvent">Submit This Request</button>
+      </div>
+      <div v-else class="ui segment basic center aligned">
+        <button class="ui button grey" @click="cancelEvent">Cancel</button>
+        <button class="ui button yellow" @click="saveEvent">Update These Details</button>
       </div>
     </div>
   </div>
@@ -67,86 +69,107 @@ export default {
       },
       fields: []
     },
+    editing: {
+      type: Boolean,
+      default: false
+    }
   },
   data() {
     return {
       selected_preset_id: '',
       selected_preset: {},
-      fields : [],
+      selected_fields : [],
+      form_event: {}
     }
   },
   methods: {
-    notify() {
-      Croud.notifications.addMessage('Your request has been sent.')
+    notify(message) {
+      Croud.notifications.addMessage(message)
+    },
+    cancelEvent() {
+      this.editing = false
     },
     saveEvent() {
         const data = {
-          fields: this.selectedFields,
-          event: this.event,
+          fields: this.selected_fields,
+          event: this.form_event,
           preset_id: this.selected_preset_id
         }
 
+        const message = this.form_event.id ? 'Your request has been updated.' : 'Your request has been sent.';
+
         this.$http.post('/partners/content-manager/save', data).then((response)=>{
           this.$dispatch('reload-data')
-          this.selected_preset_id = null
-          this.event = null
-          this.notify()
+          this.$set('form_event', {})
+          this.notify(message)
         })
+    },
+    buildEvent() {
+      this.form_event = JSON.parse(JSON.stringify(this.event))
+      this.buildFields()
+    },
+    buildFields() {
+
+      let fields = []
+      if (this.form_event && this.form_event.fields) {
+        this.selected_fields =  JSON.parse(JSON.stringify(this.form_event.fields))
+        return
+      }
+
+      if (!this.selected_preset_id || !this.selectedPreset.fields) {
+        this.selected_fields = []
+      }
+
+      this.selected_fields = JSON.parse(JSON.stringify(this.selectedPreset.fields))
     }
   },
   watch: {
-    'event.id'() {
-      if (this.event.preset_id) {
+
+    editing() {
+      if (this.event && this.event.preset_id) {
         this.selected_preset_id = this.event.preset_id
         this.selected_preset = _.findWhere(this.presets, {id: this.event.preset_id})
       }
-    }
+      this.buildEvent()
+    },
+    presets() {
+      if (this.presets.length == 1){
+        this.selected_preset_id = this.presets[0]['id']
+        this.selected_preset = this.presets[0]
+      }
+    },
   },
   computed: {
     presetList() {
       if (!this.presets) return [{id: '', name: ''}]
-      let presetList = this.presets.map(function(preset){
-        return {id : preset.id, name: preset.title}
-      })
-    },
-    selectedFields() {
-
-      let slug
-
-      if (!this.selected_preset_id || !this.selectedPreset.fields) return []
-
-      return this.selectedPreset.fields.map((field) => {
-        slug = field.title.toLowerCase().replace(/ /g,'-').replace(/[^\w-]+/g,'')
-        if (this.event.fields && this.event.fields[slug])
-          field.value = this.event.fields[slug].value
-
-        return field
-      });
-
-      // .map((field) => {
-      //     slug = field.title.toLowerCase().replace(/ /g,'-').replace(/[^\w-]+/g,'')
-      //     field.value = this.event.fields[slug] ?
-      //
-      //
-      //   // if (this.event.fields) {
-      //   //   field.value = _.reduce(this.event.fields, (event_field)=>{
-      //   //       return event_field. ==
-      //   //   })
-      //   // }
-      //   // return field
-      // })
-
-
+      // this.presets.unshift({id: '', title: 'Choose an event type'})
+      return this.presets
     },
     selectedPreset() {
       if (!this.selected_preset_id) return
       const preset = _.find(this.presets, {id: parseInt(this.selected_preset_id)})
       return preset;
     },
-    // buildEvent(){
-    //   if (!this.event || !this.event.preset_id) return
-    //   this.selected_preset = _.findWhere(this.presets, {id: this.event.preset_id})
-    // }
+  },
+  ready() {
+    if (this.presets.length == 1){
+      this.selected_preset_id = this.presets[0]['id']
+      this.selected_preset = this.presets[0]
+    }
+    // this.buildFields()
+  },
+  events: {
+    'reset-fields'() {
+      this.form_event = {}
+      this.selected_fields = {}
+
+      // this.$log(this.event)
+      this.$nextTick(()=>{
+        this.buildEvent()
+      })
+
+      // this.buildFields()
+    }
   }
 }
 </script>
