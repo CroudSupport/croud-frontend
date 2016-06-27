@@ -23,7 +23,6 @@ export default {
         multiple : {
             default : false
         },
-
         path : {
             default : '/document/upload-unlinked/'
         },
@@ -45,7 +44,8 @@ export default {
         },
         createImageThumbnails : {
             default : false
-        }
+        },
+        uploading: false,
     },
     data() {
         return {
@@ -82,6 +82,7 @@ export default {
 
             dz.on("sending", (file) => {
                 this.$dispatch('file-sending', file);
+                this.uploading = true
             });
 
             dz.on("addedfile", (file) => {
@@ -90,6 +91,7 @@ export default {
 
             dz.on("success", (file, response) => {
                 this.$dispatch('file-upload-success', response);
+                this.uploading = false
                 if (!this.files) this.files = [];
 
                 if (typeof response === 'string') {
@@ -100,6 +102,7 @@ export default {
             });
 
             dz.on("error", (file, errorMessage, xhr) => {
+                this.uploading = false
                 this.$dispatch('file-upload-error', {
                     file: file,
                     response: response,

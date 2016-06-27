@@ -24,7 +24,6 @@
   text-align:right;
   width:100%;
 }
-
 </style>
 <template>
   <div>
@@ -33,12 +32,14 @@
         <div class="ui segment secondary basic">
           <quill :content.sync="new_message.note" output="html"></quill>
           <div class="message-submit">
-            <button class="ui small yellow right labeled icon button" @click.prevent="save()">
+            <button v-show="!saving && can_cancel" class="ui small grey button" @click.prevent="cancel()">
+              Cancel
+            </button>
+            <button class="{{saveButtonClass}}" @click.prevent="save()">
               Save Message
               <i class="right plus icon"></i>
             </button>
           </div>
-
           <div class="message-documents">
             <a v-for="document in new_message.documents" class="ui label document-item" @click.prevent="removeDocument(document)">
               {{document.name}}
@@ -66,6 +67,10 @@ export default {
       type: Object,
       default: () => {}
     },
+    can_cancel: true,
+    auto_focus: false,
+    auto_close: false,
+    visible: true,
     source_type: '',
     messages: {
       type: Array,
@@ -74,6 +79,7 @@ export default {
   },
   data() {
     return {
+      saving: false,
       message: {
         note: '',
         documents: [],
@@ -90,10 +96,24 @@ export default {
     }
   },
   computed: {
+    saveButtonClass() {
+      const classNames = ['ui small yellow right labeled icon button']
+
+      if (this.saving)
+        classNames.push('loading')
+
+      return classNames.join(' ')
+    }
   },
   watch: {
     source() {
         this.$broadcast('set-html', '')
+    },
+    visible() {
+      if (this.visible && this.auto_focus)
+      this.$nextTick(() => {
+        this.$broadcast('focus-editor')
+      })
     }
   },
   methods: {
@@ -101,30 +121,34 @@ export default {
       this.new_message.documents.$remove(document)
     },
     resetMessage() {
-      this.$set('new_message', _.extend({}, this.message))
+      this.documents = []
+      this.$broadcast('set-html', '')
+    },
+    cancel() {
+      this.resetMessage()
+      this.visible = false
     },
     save(){
-
-      // if (this.new_message.note == ''
-      // && this.this.new_message.documents.length == 0) return
-
       const data = {
         message: this.new_message,
         source: this.source,
         source_type: 'event'
       }
+      this.saving = true
       this.$http.post('/api/message/post/', data).then((response) => {
         this.source.notes.push(response.data)
         this.resetMessage()
         this.$broadcast('set-html', '')
         this.new_message.documents = []
-
-
+        if (this.auto_close) {
+          this.visible = false
+        }
+        this.saving = false
       });
     }
   },
   ready() {
-      this.new_message = _.extend({}, this.message)
+      this.$set('new_message', JSON.parse(JSON.stringify(this.message)))
       this.$nextTick(()=>{
         this.init_dropzone = true
       })

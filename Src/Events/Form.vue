@@ -14,8 +14,6 @@ input, textarea, select, .textbox, select.textbox{
 </style>
 <template>
   <div>
-    <div class="formContainerGroups">
-      <h2 class="yellow">Request Form</h2>
       <div class="ui segment basic secondary form">
         <div class="formRow" v-if="presets.length > 1 && !form_event.id">
           <label>Preset</label>
@@ -24,18 +22,17 @@ input, textarea, select, .textbox, select.textbox{
           </div>
         </div>
         <div v-for="field in selected_fields">
-          <component :is="field.field" :preset_id="selected_preset_id" :field.sync="field" :index="$index"></component>
+          <component :is="fieldComponent(field)" :preset_id="selected_preset_id" :field.sync="field" :index="$index"></component>
         </div>
       </div>
       <div v-if="!event.id" class="ui segment basic center aligned">
-        <button class="ui button yellow" @click="saveEvent">Submit This Request</button>
+        <button class="{{saveButtonClass}}" @click="saveEvent">Submit This Request</button>
       </div>
       <div v-else class="ui segment basic center aligned">
-        <button class="ui button grey" @click="cancelEvent">Cancel</button>
-        <button class="ui button yellow" @click="saveEvent">Update These Details</button>
+        <button v-if="closable" class="ui button grey" @click.prevent="cancelEvent">Cancel</button>
+        <button class="{{saveButtonClass}}" @click.prevent="saveEvent">Update These Details</button>
       </div>
     </div>
-  </div>
 </template>
 <script>
 
@@ -58,6 +55,10 @@ export default {
       type: Array,
       default: () => []
     },
+    closable: {
+      type: Boolean,
+      default: true
+    },
     event: {
       type: Object,
       default(){
@@ -72,6 +73,14 @@ export default {
     editing: {
       type: Boolean,
       default: false
+    },
+    save_path: {
+      type: String,
+      default: '/partners/content-manager/save'
+    },
+    reset_on_save: {
+      type: Boolean,
+      default: true
     }
   },
   data() {
@@ -95,13 +104,14 @@ export default {
           event: this.form_event,
           preset_id: this.selected_preset_id
         }
-
         const message = this.form_event.id ? 'Your request has been updated.' : 'Your request has been sent.';
-
-        this.$http.post('/partners/content-manager/save', data).then((response)=>{
+        this.saving = true
+        this.$http.post(this.save_path, data).then((response)=>{
           this.$dispatch('reload-data')
-          this.$set('form_event', {})
           this.notify(message)
+          this.saving = false
+          if (this.reset_on_save)
+            this.$set('form_event', {})
         })
     },
     buildEvent() {
@@ -121,6 +131,18 @@ export default {
       }
 
       this.selected_fields = JSON.parse(JSON.stringify(this.selectedPreset.fields))
+    },
+    fieldComponent(field) {
+      let fieldType;
+
+      switch(field.field) {
+        case 'select':
+          fieldType = 'selectbox'
+          break;
+        default:
+        fieldType = field.field;
+      }
+      return fieldType
     }
   },
   watch: {
@@ -129,6 +151,9 @@ export default {
       if (this.event && this.event.preset_id) {
         this.selected_preset_id = this.event.preset_id
         this.selected_preset = _.findWhere(this.presets, {id: this.event.preset_id})
+      } else if (this.event && this.event.preset) {
+        this.selected_preset_id = this.event.preset.id
+        this.selected_preset = this.event.preset
       }
       this.buildEvent()
     },
@@ -140,6 +165,14 @@ export default {
     },
   },
   computed: {
+    saveButtonClass() {
+      let className = ['ui button yellow']
+
+      if (this.saving)
+        className.push('loading')
+
+      return className.join(' ')
+    },
     presetList() {
       if (!this.presets) return [{id: '', name: ''}]
       // this.presets.unshift({id: '', title: 'Choose an event type'})
@@ -155,6 +188,9 @@ export default {
     if (this.presets.length == 1){
       this.selected_preset_id = this.presets[0]['id']
       this.selected_preset = this.presets[0]
+    } else if (this.event && this.event.preset) {
+      this.selected_preset_id = this.event.preset.id
+      this.selected_preset =this.event.preset
     }
     // this.buildFields()
   },

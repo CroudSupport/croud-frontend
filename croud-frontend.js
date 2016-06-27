@@ -182,8 +182,11 @@ module.exports = {
         Vue.http.headers.common = Vue.http.headers.common != undefined? Vue.http.headers.common : {};
 
         Vue.http.headers.common['Time-Offset'] = (new Date()).getTimezoneOffset();
+        Vue.http.headers.common['UTC-Offset'] = (new moment()).utcOffset();
         Vue.http.headers.common['Current-User'] = Croud.systemSettings && Croud.systemSettings.user ? Croud.systemSettings.user.code : '';
 
+        Croud.systemSettings.timeOffset = Vue.http.headers.common['Time-Offset'];
+        Croud.systemSettings.utcOffset = Vue.http.headers.common['Time-Offset'];
         // Vue.http.headers.common['Authorization'] = 'Basic YXBpOnBhc3N3b3Jk';
     },
 }
