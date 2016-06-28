@@ -21,6 +21,7 @@ input, textarea, select, .textbox, select.textbox{
             <semantic-form-dropdown :options="presetList" :model.sync="selected_preset_id" title_field="title"></semantic-form-dropdown>
           </div>
         </div>
+
         <div v-for="field in selected_fields">
           <component :is="fieldComponent(field)" :preset_id="selected_preset_id" :field.sync="field" :index="$index"></component>
         </div>
@@ -88,7 +89,8 @@ export default {
       selected_preset_id: '',
       selected_preset: {},
       selected_fields : [],
-      form_event: {}
+      form_event: {},
+      saving: false,
     }
   },
   methods: {
