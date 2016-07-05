@@ -2,14 +2,14 @@
 
 <template>
 
-<div>
+<span>
     <div class="ui action input">
-        <input v-el:pickerfield v-model="display_date" type="text" placeholder="{{placeholder}}">
+        <input v-el:pickerfield v-model="display_date" type="text" class="{{classname}}" placeholder="{{placeholder}}">
         <button v-el:pickerbutton class="ui icon button">
-            <i class="calendar outline icon"></i>
+            <i class="{{icon}} icon"></i>
         </button>
     </div>
-</div>
+</span>
 
 </template>
 
@@ -32,11 +32,17 @@ export default {
         display: {
             default: 'D MMM YYYY'
         },
+        classname: {
+            default: '',
+        },
         settings: {
             type: Object,
             default () {
                 return {}
             }
+        },
+        icon: {
+            default: 'calendar'
         }
     },
     data() {
@@ -60,7 +66,6 @@ export default {
 
         let settings = {
             format: this.display,
-            // defaultDate: this.display_date,
             field: this.$els.pickerfield,
             trigger: this.$els.pickerbutton,
             onSelect: (date) => {
