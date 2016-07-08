@@ -72,7 +72,8 @@
         </div>
         <div class="item" v-if="croudie === 0">
             <div class="header">Hourly Rate <small>(<= £{{ rate }})</small></div>
-            <input style="width:100%" type="range" min="1" max="100" v-model="rate" debounce="500"/>
+            <input style="width:100%" type="range" min="0" :max="maxRate" v-model="rate" debounce="500"/>
+            <croud-rate-histogram :rate.sync="rate" :sparks="rateHistogram"></croud-rate-histogram>
         </div>
         <input v-else value="0" v-model="rate" hidden/>
         <div class="item">
@@ -198,6 +199,12 @@
                     return ''
                 },
             },
+
+            rateHistogram: {
+                default() {
+                    return []
+                },
+            },
         },
 
         data() {
@@ -247,6 +254,16 @@
                     },
                 },
             }
+        },
+
+        computed: {
+            maxRate() {
+                if (!this.rateHistogram.length) {
+                    return 100
+                }
+
+                return this.rateHistogram[this.rateHistogram.length -1].key + 10
+            },
         },
     }
 </script>
