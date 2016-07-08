@@ -98,7 +98,9 @@
                                 :country.sync="country"
                                 :qualification.sync="qualification"
                                 :availability.sync="availability"
-                                :rate.sync="rate" :search.sync="search">
+                                :rate.sync="rate"
+                                :search.sync="search"
+                                :rate-histogram="meta.rates">
                             </croudie-picker-menu>
                             </div>
 
@@ -272,6 +274,7 @@
                         total: 1,
                     },
                 },
+                rateHistogram: [],
                 croudies: [],
                 loading: true,
                 showModal: false,
