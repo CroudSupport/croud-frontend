@@ -9,7 +9,8 @@ var CroudiePicker = require('./Src/CroudiePicker.vue'),
     MessagesEditor = require('./Src/MessagesEditor.vue'),
     Dropzone = require('./Src/Dropzone.vue'),
     EventsForm = require('./Src/Events/Form.vue'),
-    EventsView = require('./Src/Events/View.vue')
+    EventsView = require('./Src/Events/View.vue'),
+    RateHistogram = require('./Src/RateHistogram.vue')
     ;
 
 module.exports = {
@@ -26,6 +27,7 @@ module.exports = {
         Vue.component('croud-dropzone', Dropzone);
         Vue.component('croud-events-form', EventsForm);
         Vue.component('croud-events-view', EventsView);
+        Vue.component('croud-rate-histogram', RateHistogram);
 
         Vue.directive('chosen', {
             twoWay: true, // note the two-way binding
