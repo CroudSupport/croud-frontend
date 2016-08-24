@@ -1,4 +1,4 @@
-var Timeline = require('./Src/Timeline.vue');
+var Timeline = require('../Src/Timeline.vue');
 
 module.exports = {
     install: function (Vue, options) {

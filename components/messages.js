@@ -1,5 +1,5 @@
 
-var Dropzone = require('../Dropzone'),
+var Dropzone = require('./dropzone'),
     Messages = require('../Src/Messages.vue'),
     MessagesEditor = require('../Src/MessagesEditor.vue');
 

@@ -1,22 +1,25 @@
-var CroudiePicker = require('./Src/CroudiePicker.vue'),
-    MultiSearch = require('./Src/MultiSearch.vue'),
-    PopulatedSearch = require('./Src/PopulatedSearch.vue'),
-    Paginator = require('./Src/Paginator.vue'),
-    Calendar = require('./Src/Calendar.vue'),
-    Timeline = require('./Src/Timeline.vue'),
-    DatePicker = require('./Src/DatePicker.vue'),
-    Messages = require('./Src/Messages.vue'),
-    MessagesEditor = require('./Src/MessagesEditor.vue'),
-    Dropzone = require('./Src/Dropzone.vue'),
-    EventsForm = require('./Src/Events/Form.vue'),
-    EventsView = require('./Src/Events/View.vue'),
-    RateHistogram = require('./Src/RateHistogram.vue')
-    ;
+
 
 module.exports = {
+
     install: function (Vue, options) {
-        Vue.component('croud-messages', Messages);
-        Vue.component('croud-messages-editor', MessagesEditor);
+
+        var CroudiePicker = require('./Src/CroudiePicker.vue'),
+            MultiSearch = require('./Src/MultiSearch.vue'),
+            PopulatedSearch = require('./Src/PopulatedSearch.vue'),
+            Paginator = require('./Src/Paginator.vue'),
+            Calendar = require('./Src/Calendar.vue'),
+            Timeline = require('./Src/Timeline.vue'),
+            DatePicker = require('./Src/DatePicker.vue'),
+            Messages = require('./Src/Messages.vue'),
+            MessagesEditor = require('./Src/MessagesEditor.vue'),
+            Dropzone = require('./Src/Dropzone.vue'),
+            EventsForm = require('./Src/Events/Form.vue'),
+            EventsView = require('./Src/Events/View.vue'),
+            RateHistogram = require('./Src/RateHistogram.vue')
+            ;
+
+
         Vue.component('croud-datepicker', DatePicker);
         Vue.component('croud-timeline', Timeline);
         Vue.component('croud-calendar', Calendar);

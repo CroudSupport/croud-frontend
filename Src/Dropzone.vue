@@ -67,7 +67,10 @@ export default {
         build() {
             if (this.initialised) return
 
+            this.initialised = true
+
             Dropzone.autoDiscover = false;
+
             const params = {
                 url: this.path,
                 multiple: this.multiple,
@@ -113,8 +116,6 @@ export default {
             dz.on("queuecomplete", (file) => {
                 this.$dispatch('file-upload-queue-completed', file);
             });
-
-            this.initialised = true
         }
     },
     ready() {
