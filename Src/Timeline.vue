@@ -66,7 +66,11 @@
         font-weight:normal;
     }
 
-    #timeline-search-header .ui.selection.dropdown {
+    .timeline-search-header {
+        margin-bottom:0;
+    }
+
+    .timeline-search-header .ui.selection.dropdown {
         width: 300px
     }
 
@@ -80,8 +84,8 @@
 </style>
 
 <template>
-    <div v-el:container>
-        <div id="timeline-search-header" class="ui basic segment secondary">
+    <div v-el:container class="contained">
+        <div v-el:header class="timeline-search-header ui basic segment secondary">
             <div class="ui grid two columns">
                 <div class="column">
                     <div class="ui icon input">
@@ -101,11 +105,11 @@
          <div id="timeline-sidebar">
              <svg id="event-types" v-el:svg :width="300" :height='limits.height'>
                  <g class="rows" transform="translate(0, 0)">
-                     <rect v-for="block in groupings" x="0" :y="blockHeight * $index" width="100%" :height="blockHeight" stroke="#f5f5f5" stroke-width="2"></rect>
+                     <rect v-for="block in groupings" x="0" :y="height * $index" width="100%" :height="height" stroke="#f5f5f5" stroke-width="2"></rect>
                  </g>
                  <g v-for="block in groupings" transform="translate(0, 0)">
                      <title>{{ block }}</title>
-                     <text @click="select(block)" text-anchor="right" :x="5" :y="($index * blockHeight) + 5 +(blockHeight / 2)">{{ block | truncate 35 }}</text>
+                     <text @click="select(block)" text-anchor="right" :x="5" :y="($index * height) + 5 + (height / 2)">{{ block | truncate 35 }}</text>
                  </g>
              </svg>
         </div>
@@ -113,7 +117,6 @@
          <div id="timeline-header">
              <div id="timeline-index">
                  <svg id="" :width="svgWidth" height="30">
-
                      <g transform="translate(40, 0)">
                          <g>
                              <g v-for="line in gridLines">
@@ -122,6 +125,7 @@
                                  <text v-if="$index % smartGrids === 0" text-anchor="middle" :x="$index * hourWidth" y="50%">{{ line }}</text>
                              </g>
                          </g>
+                     </g>
                  </svg>
             </div>
         </div>
@@ -130,7 +134,7 @@
                 <svg id="timeline-events" v-el:svg :width="svgWidth" :height='limits.height'>
                     <g>
                         <g class="rows">
-                            <rect v-for="block in groupings" x="0" :y="blockHeight * $index" width="100%" :height="blockHeight" stroke="#f5f5f5" stroke-width="2"></rect>
+                            <rect v-for="block in groupings" x="0" :y="height * $index" width="100%" :height="height" stroke="#f5f5f5" stroke-width="2"></rect>
                         </g>
                         <g class="graph" transform="translate(40, 0)">
                             <line id="daily-pointer" :x1='dailyWidth' :x2="dailyWidth" y1='0%' y2='100%'></line>
@@ -168,6 +172,12 @@
 
     export default {
         props: {
+            height: {
+                default: 25
+            },
+            padding: {
+                default: 5
+            },
             events : {
                 type: Array,
                 default: () => []
@@ -184,7 +194,11 @@
             top: 0,
             bottom: 0,
             left: 0,
-            right: 0
+            right: 0,
+            click: {
+                type: Function,
+                default: () => {}
+            }
         },
 
         data() {
@@ -197,7 +211,6 @@
                 highestDuration: 0,
                 hourWidth: 29.1,
                 totalWidth: 873 - 120,
-                blockHeight: 45,
                 scale: 'days',
                 scaleWidth: 29.1,
                 groupings: [],
@@ -233,7 +246,7 @@
                     end: false,
                     range: 0,
                     units: this.scale,
-                    height: (this.groupings && this.blockHeight) ? this.groupings.length * this.blockHeight : 0,
+                    height: (this.groupings && this.height) ? this.groupings.length * this.height : 0,
                 }
 
                 this.events.map((event) => {
@@ -262,7 +275,7 @@
                 return filterBy(filterBy(this.events, this.category, 'category'), this.search, 'title').map(event => {
                     event.x = (moment(event.start).diff(limits.start, this.scale)) * this.scaleWidth
                     event.width = (moment(event.end).diff(event.start, this.scale)) * this.scaleWidth
-                    event.height = this.blockHeight - 15
+                    event.height = this.height - (this.padding * 2)
 
                     if (this.categories.map(c => { return c.id }).indexOf(event.category) === -1) {
                         this.categories.push({ id: event.category, name: event.category })
@@ -272,7 +285,7 @@
                         this.groupings.push(event.title)
                     }
 
-                    event.y = (this.groupings.indexOf(event.title) * this.blockHeight) + 7.5
+                    event.y = (this.groupings.indexOf(event.title) * this.height) + this.padding
                     return event
                 })
             },
@@ -297,10 +310,10 @@
             linkPaths() {
                 return this.links.map(link => {
                     const startX = (link[0].start + link[0].duration / 2) * this.hourWidth
-                    const startY = (link[0].lane * this.blockHeight) - 7.5
-                    const laneTop = (link[1].lane - 1) * this.blockHeight
+                    const startY = (link[0].lane * this.height) - 7.5
+                    const laneTop = (link[1].lane - 1) * this.height
                     const endX = (link[1].start) * this.hourWidth
-                    const endY = (link[1].lane * this.blockHeight) - (this.blockHeight / 2)
+                    const endY = (link[1].lane * this.height) - (this.height / 2)
                     link.path = `M${startX} ${startY}
                                 L ${startX} ${laneTop}
                                 a 25 25 0 0 0 25 25
@@ -363,25 +376,31 @@
         },
 
         ready() {
+
             this.totalWidth = this.$els.svg.getBoundingClientRect().width - 120
 
             let left,
                 top,
                 height,
+                width,
                 target,
                 obj = $('#timeline'),
                 $window = $(window),
-                container = $('#adpcalendar'),
+                container = $(this.$els.container),
+                $parent = $(container.parent()),
                 sidebar = $('#timeline-sidebar'),
+                sidebarPadding = parseInt(sidebar.css('padding-top').replace('px', '')),
                 events = document.getElementById('event-types'),
+                header = $(this.$els.header).outerHeight();
                 heading = document.getElementById('timeline-index'),
 
                 resize = () =>
                 {
-                    height = ($window.height() - (this.top + this.bottom)),
-                    obj.width(($window.width() - (this.left + this.right)) - this.categoryWidth);
-                    obj.css({'margin-left': this.categoryWidth, 'height' : height})
-                    sidebar.height(height);
+                    height = $parent.height(),
+                    width = $parent.outerWidth(),
+                    obj.width(width - this.categoryWidth);
+                    obj.css({'margin-left': this.categoryWidth, 'height' : height - (header + sidebarPadding)})
+                    sidebar.height(height - (header + sidebarPadding));
                 },
                 scroll = () =>
                 {
@@ -402,6 +421,8 @@
             select(block) {
                 this.selected = block
                 this.$dispatch('select', block)
+                if (this.click && typeof this.click == 'function')
+                    this.click(block)
             },
         },
     }
