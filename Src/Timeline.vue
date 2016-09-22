@@ -79,6 +79,7 @@
         padding-top:30px;
         overflow: hidden;
         border-right: 5px solid rgba(200, 200, 200, 1);
+        z-index: 10;
     }
 
 </style>
@@ -129,7 +130,7 @@
                  </svg>
             </div>
         </div>
-        <div id="timeline-container">
+        <div id="timeline-container" class="contained">
             <div id="timeline">
                 <svg id="timeline-events" v-el:svg :width="svgWidth" :height='limits.height'>
                     <g>
@@ -286,6 +287,7 @@
                     }
 
                     event.y = (this.groupings.indexOf(event.title) * this.height) + this.padding
+
                     return event
                 })
             },
@@ -380,41 +382,45 @@
             this.totalWidth = this.$els.svg.getBoundingClientRect().width - 120
 
             let left,
-                top,
-                height,
-                width,
-                target,
-                obj = $('#timeline'),
-                $window = $(window),
-                container = $(this.$els.container),
-                $parent = $(container.parent()),
-                sidebar = $('#timeline-sidebar'),
-                sidebarPadding = parseInt(sidebar.css('padding-top').replace('px', '')),
-                events = document.getElementById('event-types'),
-                header = $(this.$els.header).outerHeight();
-                heading = document.getElementById('timeline-index'),
+            top,
+            height,
+            width,
+            target,
+            obj = $('#timeline'),
+            $window = $(window),
+            container = $(this.$els.container),
+            $parent = $(container.parent()),
+            sidebar = $('#timeline-sidebar'),
+            sidebarPadding = parseInt(sidebar.css('padding-top').replace('px', '')),
+            events = document.getElementById('event-types'),
+            header = $(this.$els.header).outerHeight();
+            heading = document.getElementById('timeline-index'),
 
-                resize = () =>
-                {
-                    height = $parent.height(),
-                    width = $parent.outerWidth(),
-                    obj.width(width - this.categoryWidth);
-                    obj.css({'margin-left': this.categoryWidth, 'height' : height - (header + sidebarPadding)})
-                    sidebar.height(height - (header + sidebarPadding));
-                },
-                scroll = () =>
-                {
-                    heading.style['margin-left'] = '-' + obj.scrollLeft() + 'px'
-                    events.style['margin-top'] = '-' + obj.scrollTop() + 'px'
-                }
+            resize = () =>
+            {
+                height = $parent.height(),
+                width = $parent.outerWidth(),
+                obj.width(width - this.categoryWidth);
+                obj.css({'margin-left': this.categoryWidth, 'height' : height - (header + sidebarPadding)})
+                sidebar.height(height - (header + sidebarPadding));
+            },
+            scroll = () =>
+            {
+                heading.style['margin-left'] = '-' + obj.scrollLeft() + 'px'
+                events.style['margin-top'] = '-' + obj.scrollTop() + 'px'
+            }
 
-                resize()
-                scroll()
+            resize()
+            scroll()
 
-                obj.scrollLeft(this.dailyWidth - ((obj.width() / 2) - (this.hourWidth * 2)))
+            obj.scrollLeft(this.dailyWidth - ((obj.width() / 2) - (this.hourWidth * 2)))
 
-                $window.on('resize', resize)
-                obj.on('scroll', scroll)
+            $window.on('resize', resize)
+            obj.on('scroll', scroll)
+
+            setTimeout(function(){
+                $window.trigger('resize')
+            })
         },
 
         methods: {
