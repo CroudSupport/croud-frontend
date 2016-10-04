@@ -46,6 +46,7 @@ export default {
             default : false
         },
         uploading: false,
+        headers: []
     },
     data() {
         return {
@@ -65,6 +66,33 @@ export default {
     },
     methods: {
         build() {
+
+            function setupDragon(uploader) {
+                /* A little closure for handling proper
+                   drag and drop hover behavior */
+                var dragon = (function (elm) {
+                  var dragCounter = 0;
+
+                  return {
+                    enter: function (event) {
+                      event.preventDefault();
+                      dragCounter++;
+                      elm.classList.add('dz-drag-hover')
+                    },
+                    leave: function (event) {
+                      dragCounter--;
+                      if (dragCounter === 0) {
+                        elm.classList.remove('dz-drag-hover')
+                      }
+                    }
+                  }
+                })(uploader.element);
+
+                uploader.on('dragenter', dragon.enter);
+                uploader.on('dragleave', dragon.leave);
+            }
+
+
             if (this.initialised) return
 
             this.initialised = true
@@ -77,23 +105,45 @@ export default {
                 paramName: this.file,
                 createImageThumbnails: this.createImageThumbnails,
                 clickable: this.clickable,
-                previewTemplate: this.previewTemplate
+                previewTemplate: this.previewTemplate,
+                headers: this.headers,
+                dragenter: function () {},
+                dragleave: function () {},
+                init: function() {
+                    setupDragon(this)
+                }
             };
+
 
             // let dz = new Dropzone(this.target, params);
             const dz = new Dropzone(this.$els.dropzone, params);
 
+            dz.on("processing", function() {
+                if (params.setUrl) {
+                  dz.options.url = params.setUrl()
+                }
+            });
+
+            dz.on("processing", (file) => {
+                this.$emit('file-sending', file);
+                this.uploading = true
+            });
+
             dz.on("sending", (file) => {
-                this.$dispatch('file-sending', file);
+                this.$emit('file-sending', file);
                 this.uploading = true
             });
 
             dz.on("addedfile", (file) => {
-                this.$dispatch('file-added', file);
+                this.$emit('file-added', file);
             });
 
             dz.on("success", (file, response) => {
-                this.$dispatch('file-upload-success', response);
+
+                if (response.data)
+                    response = response.data
+
+                this.$emit('file-upload-success', response);
                 this.uploading = false
                 if (!this.files) this.files = [];
 
@@ -106,7 +156,7 @@ export default {
 
             dz.on("error", (file, errorMessage, xhr) => {
                 this.uploading = false
-                this.$dispatch('file-upload-error', {
+                this.$emit('file-upload-error', {
                     file: file,
                     response: response,
                     xhr: xhr
@@ -114,7 +164,7 @@ export default {
             });
 
             dz.on("queuecomplete", (file) => {
-                this.$dispatch('file-upload-queue-completed', file);
+                this.$emit('file-upload-queue-completed', file);
             });
         }
     },
