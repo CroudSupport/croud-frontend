@@ -78,6 +78,7 @@ export default {
                 onSelect: (date) => {
                     this.date = moment(date)
                     this.display_date = this.date.format(this.display)
+                    this.$emit('date-selected', date)
                     if (this.settings.afterSelect && typeof this.settings.afterSelect == 'function')
                         this.settings.afterSelect(this.date)
                 }
