@@ -1,5 +1,4 @@
 
-
 <template>
     <span>
         <div class="ui action input">
@@ -49,21 +48,6 @@ export default {
             picker: null
         }
     },
-    watch: {
-      date() {
-         if (this.date.toJSON() !== this.picker.getMoment().toJSON()) {
-            this.picker.setMoment(this.date)
-        }
-      },
-      min_date() {
-          if (!this.picker) return
-        //   this.picker.setMinDate(this.min_date)
-      },
-      max_date() {
-          if (!this.picker) return
-        //   this.picker.setMaxDate(this.max_date)
-      },
-    },
     methods: {
         updateDate() {
             this.date = moment(croudDate(this.display_date))
@@ -78,7 +62,7 @@ export default {
                 onSelect: (date) => {
                     this.date = moment(date)
                     this.display_date = this.date.format(this.display)
-                    this.$emit('date-selected', date)
+                    this.$emit('date-selected', this.date)
                     if (this.settings.afterSelect && typeof this.settings.afterSelect == 'function')
                         this.settings.afterSelect(this.date)
                 }
@@ -90,9 +74,14 @@ export default {
         }
     },
     ready() {
-        this.display_date = this.date ? this.date.format(this.display) : moment().format(this.display)
 
-        this.create()
+      if (!this.date || typeof this.date === 'string') {
+        this.date = moment(this.date)
+      }
+
+      this.display_date = this.date ? this.date.format(this.display) : moment().format(this.display)
+
+      this.create()
     }
 }
 
