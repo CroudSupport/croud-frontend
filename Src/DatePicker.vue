@@ -1,4 +1,5 @@
 
+
 <template>
     <span>
         <div class="ui action input">
@@ -44,13 +45,30 @@ export default {
     },
     data() {
         return {
-            display_date: null,
-            picker: null
+          internal_date: null,
+          display_date: null,
+          picker: null
         }
+    },
+    watch: {
+      date(value) {
+        if (this.date && this.picker && this.date !== this.internal_date) {
+            this.picker.setMoment(this.date)
+        }
+      },
+      // min_date() {
+      //   if (!this.picker) return
+      //   this.picker.setMinDate(this.min_date)
+      // },
+      // max_date() {
+      //     if (!this.picker) return
+      //     this.picker.setMaxDate(this.max_date)
+      // },
+
     },
     methods: {
         updateDate() {
-            this.date = moment(croudDate(this.display_date))
+            this.internal_date = moment(croudDate(this.display_date))
         },
         create() {
             const inst = this
@@ -60,26 +78,24 @@ export default {
                 field: this.$els.pickerfield,
                 trigger: this.$els.pickerbutton,
                 onSelect: (date) => {
-                    this.date = moment(date)
-                    this.display_date = this.date.format(this.display)
-                    this.$emit('date-selected', this.date)
-                    if (this.settings.afterSelect && typeof this.settings.afterSelect == 'function')
-                        this.settings.afterSelect(this.date)
+                    this.internal_date = moment(date)
+                    // this.display_date = this.internal_date.format(this.display)
+                    this.$emit('date-selected', this.internal_date)
+                    if (this.settings.afterSelect && typeof this.settings.afterSelect === 'function')
+                        this.settings.afterSelect(this.internal_date)
                 }
             }
 
             this.picker = new Pikaday(_.extend(settings, this.settings))
-
-            if (this.date) this.picker.setMoment(this.date)
+            if (this.internal_date) this.picker.setMoment(this.internal_date)
         }
     },
     ready() {
 
-      if (!this.date || typeof this.date === 'string') {
-        this.date = moment(this.date)
+      if (this.date) {
+        this.internal_date = moment(this.date)
+        this.display_date = this.internal_date.format(this.display)
       }
-
-      this.display_date = this.date ? this.date.format(this.display) : moment().format(this.display)
 
       this.create()
     }

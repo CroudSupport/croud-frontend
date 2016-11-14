@@ -43,7 +43,7 @@
                 <img class="ui mini circular inline image" :title="croudie.name" :src="croudie.avatar">
             </span>
         </div>
-        <semantic-modal size="large" :scrolling="true" :active.sync="showModal">
+        <semantic-modal size="large" :scrolling="true" :active.sync="showModal" :settings="pickerModalSettings">
             <div v-if="refreshFilters"></div>
             <div class="ui basic segment">
                 <div class="ui top aligned two column grid">
@@ -274,6 +274,13 @@
                         total: 1,
                     },
                 },
+                pickerModalSettings: {
+                  closeable: true,
+                  closeable_button: true,
+                  onHidden: () => {
+                    this.$emit('picker-closed')
+                  }
+                },
                 rateHistogram: [],
                 croudies: [],
                 loading: true,
@@ -454,7 +461,6 @@
 
             filters() {
                 return this.frontEndFiltering ? {
-                    include: true,
                     clients: this.client.map(client => client.id),
                 } : {
                     languages: this.language.map((language) => language.id),
@@ -466,7 +472,6 @@
                     system: this.croudie,
                     rate: this.rate,
                     online: this.online,
-                    include: true,
                     search: this.search,
                 }
             },

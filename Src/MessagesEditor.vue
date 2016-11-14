@@ -27,7 +27,7 @@
 </style>
 <template>
   <div>
-    <croud-dropzone :multiple="true" clickable=".fileuploader" :files.sync="new_message.documents" :autostart="false" :start="init_dropzone">
+    <croud-dropzone :multiple="true" clickable=".fileuploader" :path="path" :headers="headers" :files.sync="new_message.documents" :autostart="false" :start="init_dropzone">
       <div slot="dropzone-container" class="message-editor-container">
         <div class="ui segment secondary basic">
           <quill :content.sync="new_message.note" output="html"></quill>
@@ -35,7 +35,7 @@
             <button v-show="!saving && can_cancel" class="ui small grey button" @click.prevent="cancel()">
               Cancel
             </button>
-            <button class="{{saveButtonClass}}" @click.prevent="save()">
+            <button v-bind:class="saveButtonClass" @click.prevent="save()">
               Save Message
               <i class="right plus icon"></i>
             </button>
@@ -70,8 +70,11 @@ export default {
     can_cancel: true,
     auto_focus: false,
     auto_close: false,
+    path: null,
+    headers: null,
     visible: true,
     source_type: '',
+    emit_save: false,
     messages: {
       type: Array,
       default: () => {}
@@ -129,6 +132,27 @@ export default {
       this.visible = false
     },
     save(){
+
+      if (this.saving) return
+
+      const callback = ()=> {
+        this.resetMessage()
+        this.$broadcast('set-html', '')
+        this.new_message.documents = []
+        if (this.auto_close) {
+          this.visible = false
+        }
+        this.saving = false
+      }
+
+      if (this.emit_save) {
+        this.saving = true
+        this.$emit('save-message', {
+          message: this.new_message,
+          callback
+        })
+        return;
+      }
       const data = {
         message: this.new_message,
         source: this.source,
@@ -137,13 +161,7 @@ export default {
       this.saving = true
       this.$http.post('/api/message/post/', data).then((response) => {
         this.source.notes.push(response.data)
-        this.resetMessage()
-        this.$broadcast('set-html', '')
-        this.new_message.documents = []
-        if (this.auto_close) {
-          this.visible = false
-        }
-        this.saving = false
+        callback()
       });
     }
   },

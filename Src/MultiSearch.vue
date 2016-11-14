@@ -2,7 +2,7 @@
     <div>
         <semantic-search v-if="local" :local="local" :fields="search.fields" :placeholder="placeholder"></semantic-search>
         <semantic-search v-else :url="search.url" :fields="search.fields" :placeholder="placeholder" :search-delay="searchDelay"></semantic-search>
-        <div class="ui list">
+        <div class="ui list" v-if="display_results">
             <div class="item" v-for="item in items">
                 <semantic-label size="small" colour="blue" >
                     <i v-if="flag" class="{{ item.code.toLowerCase() }} flag"></i>
@@ -17,6 +17,7 @@
 <script>
     export default {
         props: {
+            display_results: true,
             placeholder: '',
             search: {},
             local: {},

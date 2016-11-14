@@ -122,8 +122,7 @@ export default {
                 if (params.setUrl) {
                   dz.options.url = params.setUrl()
                 }
-              });
-            }
+            });
 
             dz.on("processing", (file) => {
                 this.$emit('file-sending', file);

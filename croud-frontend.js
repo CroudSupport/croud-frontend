@@ -14,8 +14,8 @@ module.exports = {
             Messages = require('./Src/Messages.vue'),
             MessagesEditor = require('./Src/MessagesEditor.vue'),
             Dropzone = require('./Src/Dropzone.vue'),
-            EventsForm = require('./Src/Events/Form.vue'),
-            EventsView = require('./Src/Events/View.vue'),
+            // EventsForm = require('./Src/Events/Form.vue'),
+            // EventsView = require('./Src/Events/View.vue'),
             RateHistogram = require('./Src/RateHistogram.vue')
             ;
 
@@ -28,8 +28,8 @@ module.exports = {
         Vue.component('populated-search', PopulatedSearch);
         Vue.component('paginator', Paginator);
         Vue.component('croud-dropzone', Dropzone);
-        Vue.component('croud-events-form', EventsForm);
-        Vue.component('croud-events-view', EventsView);
+        // Vue.component('croud-events-form', EventsForm);
+        // Vue.component('croud-events-view', EventsView);
         Vue.component('croud-rate-histogram', RateHistogram);
 
         Vue.directive('chosen', {

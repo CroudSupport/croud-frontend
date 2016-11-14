@@ -19,7 +19,7 @@
                 </div>
             </div>
         </div>
-        <div class="ui list">
+        <div v-if="display_results" class="ui list">
             <div class="item" v-for="item in items">
                 <semantic-label size="small" colour="blue" >
                     {{ item.name }}
@@ -45,6 +45,9 @@
                     return []
                 },
             },
+            display_results: {
+              default: true
+            }
         },
 
         data() {
@@ -96,7 +99,7 @@
                 })
 
             },
-            
+
             remove(item) {
                 this.items.$remove(item)
             },
