@@ -52,8 +52,8 @@ export default {
     },
     watch: {
       date(value) {
-        if (this.date && this.picker && this.date !== this.internal_date) {
-            this.picker.setMoment(this.date)
+        if (value && this.picker && value.format() !== this.internal_date.format()) {
+            this.picker.setMoment(value)
         }
       },
       // min_date() {

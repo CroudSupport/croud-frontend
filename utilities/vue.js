@@ -17,6 +17,11 @@ module.exports = {
         Vue.http.headers.common['UTC-Offset'] = (new moment()).utcOffset();
         Vue.http.headers.common['Current-User'] = Croud.systemSettings && Croud.systemSettings.user ? Croud.systemSettings.user.code : '';
 
+
+        if (gateway_url) {
+          Vue.http.options.root = `//${gateway_url}`
+        }
+
         var rootUserCode = localStorage.getItem('jwt');
 
         if (rootUserCode) {
