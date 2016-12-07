@@ -34,7 +34,7 @@
           <div class="description" v-html="description(message)"></div>
             <div v-if="files(message).length > 0" class="documents">
             <a v-for="file in files(message)" :href="path(file)" class="ui label document-item">
-              {{file.filename}}
+              {{filename(file)}}
             </a>
           </div>
         </div>
@@ -76,7 +76,7 @@
         return `${this.download_path}${file.id}`
       },
       filename(file) {
-        return this.legacy ? file.filename : file.name
+        return this.legacy || file.filename ? file.filename : file.name
       },
       buttonClass(message) {
         const className = ['ui yellow basic tiny button right aligned'];
@@ -126,7 +126,6 @@
       dateCreated(message) {
 
         const date = this.legacy ? message.date_created : message.created_at
-        console.log(date);
         const offset = (new moment()).utcOffset();
         return moment(date).utcOffset(offset).format('ll HH:mm')
       }

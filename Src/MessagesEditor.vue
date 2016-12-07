@@ -27,7 +27,16 @@
 </style>
 <template>
   <div>
-    <croud-dropzone :multiple="true" clickable=".fileuploader" :path="path" :headers="headers" :files.sync="new_message.documents" :autostart="false" :start="init_dropzone">
+    <croud-dropzone
+    :multiple="true"
+    clickable=".fileuploader"
+    :path="path"
+    :headers="headers"
+    :files.sync="new_message.documents"
+    :autostart="false"
+    :start="init_dropzone"
+    v-on:uploading="setUploading"
+    >
       <div slot="dropzone-container" class="message-editor-container">
         <div class="ui segment secondary basic">
           <quill :content.sync="new_message.note" output="html"></quill>
@@ -46,7 +55,7 @@
               <i class="delete icon"></i>
             </a>
             <div>
-              <button @click.prevent class="ui tiny blue right labeled icon button fileuploader">
+              <button @click.prevent v-bind:class="['ui', 'tiny', 'blue', 'right', 'labeled', 'icon', 'button', 'fileuploader' , {'loading' : uploading}]">
                 Attach Files
                 <i class="right upload icon"></i>
               </button>
@@ -82,6 +91,7 @@ export default {
   },
   data() {
     return {
+      uploading: false,
       saving: false,
       message: {
         note: '',
@@ -120,6 +130,9 @@ export default {
     }
   },
   methods: {
+    setUploading (opt) {
+      this.uploading = opt
+    },
     removeDocument(document) {
       this.new_message.documents.$remove(document)
     },

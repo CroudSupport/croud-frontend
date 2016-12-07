@@ -52,7 +52,7 @@ export default {
     },
     watch: {
       date(value) {
-        if (value && this.picker && value.format() !== this.internal_date.format()) {
+        if (value && this.picker && this.internal_date && value.format() !== this.internal_date.format()) {
             this.picker.setMoment(value)
         }
       },

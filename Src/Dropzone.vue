@@ -114,8 +114,6 @@ export default {
                 }
             };
 
-
-            // let dz = new Dropzone(this.target, params);
             const dz = new Dropzone(this.$els.dropzone, params);
 
             dz.on("processing", function() {
@@ -124,13 +122,9 @@ export default {
                 }
             });
 
-            dz.on("processing", (file) => {
-                this.$emit('file-sending', file);
-                this.uploading = true
-            });
-
             dz.on("sending", (file) => {
                 this.$emit('file-sending', file);
+                this.$emit('uploading', true);
                 this.uploading = true
             });
 
@@ -139,7 +133,6 @@ export default {
             });
 
             dz.on("success", (file, response) => {
-
                 if (response.data)
                     response = response.data
 
@@ -156,6 +149,7 @@ export default {
 
             dz.on("error", (file, errorMessage, xhr) => {
                 this.uploading = false
+                this.$emit('uploading', false);
                 this.$emit('file-upload-error', {
                     file: file,
                     response: response,
@@ -164,7 +158,8 @@ export default {
             });
 
             dz.on("queuecomplete", (file) => {
-                this.$emit('file-upload-queue-completed', file);
+              this.$emit('uploading', false);
+              this.$emit('file-upload-queue-completed', file);
             });
         }
     },
