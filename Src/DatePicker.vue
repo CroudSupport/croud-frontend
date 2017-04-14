@@ -107,6 +107,9 @@ export default {
         if (this.max_date) this.setMaxDate(this.max_date)
       }
     },
+    beforeDestroy () {
+      if (this.picker) this.picker.destroy()
+    },
     mounted () {
       this.init()
     },
