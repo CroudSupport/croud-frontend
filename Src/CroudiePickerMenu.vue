@@ -221,7 +221,7 @@
                     },
                 ],
                 searchAddress: {
-                    url: '/core/api/country/?search={query}',
+                    url: `${gateway_url}/api/country/?search={query}`,
                     fields: {
                         results: 'data',
                         title: 'name',
@@ -230,7 +230,7 @@
                 },
 
                 searchLanguage: {
-                    url: '/core/api/language/?search={query}',
+                    url: `${gateway_url}/api/language/?search={query}`,
                     fields: {
                         results: 'data',
                         title: 'name',
@@ -239,7 +239,7 @@
                 },
 
                 searchQualification: {
-                    url: '/core/api/qualification?per_page=100&order_by=name,asc',
+                    url: `${gateway_url}/api/qualification?per_page=100&order_by=name,asc`,
                     fields: {
                         results: 'data',
                         title: 'name',
@@ -247,7 +247,7 @@
                 },
 
                 searchClient: {
-                    url: '/core/api/client/?search={query}',
+                    url: `${gateway_url}/api/client/?search={query}`,
                     fields: {
                         results: 'data',
                         title: 'name',
