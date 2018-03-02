@@ -1,7 +1,7 @@
 <template>
     <div>
         <semantic-search v-if="local" :local="local" :fields="search.fields" :placeholder="placeholder"></semantic-search>
-        <semantic-search v-else :url="search.url" :fields="search.fields" :placeholder="placeholder" :search-delay="searchDelay"></semantic-search>
+        <semantic-search v-else :url="search.url" :fields="search.fields" :placeholder="placeholder" :search-delay="searchDelay" :auth="auth"></semantic-search>
         <div class="ui list" v-if="display_results">
             <div class="item" v-for="item in items">
                 <semantic-label size="small" colour="blue" >
@@ -28,6 +28,14 @@
             searchDelay: {
                 default: 500,
             },
+        },
+
+        data() {
+            return {
+                auth: {
+                    token: localStorage.getItem('jwt'),
+                },
+            }
         },
 
         methods: {
