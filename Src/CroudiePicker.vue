@@ -295,7 +295,7 @@
                 new_filter_users: false,
                 refresh: _.debounce((data) => {
                     this.loading = true
-                    this.$http.post('/core/api/user/pick', data).then((response) => {
+                    this.$http.post('api/user/pick', data).then((response) => {
                         this.$set('croudies', response.data.data)
                         this.$set('meta', response.data.meta)
                         this.loading = false
@@ -368,7 +368,7 @@
 
             add(croudie) {
                 this.selected.push(croudie)
-                this.$http.post('/core/api/analytics', {
+                this.$http.post('api/analytics', {
                     data: {
                         search: this.filters,
                         user_id: croudie.id,
@@ -518,7 +518,7 @@
                 const data = this.filters
                 data.page = this.meta.pagination.current_page + 1
 
-                this.$http.post('/core/api/user/pick', data).then((response) => {
+                this.$http.post('api/user/pick', data).then((response) => {
                     this.croudies.push.apply(this.croudies, response.data.data)
                     this.$set('meta', response.data.meta)
                     this.$nextTick(() => {
