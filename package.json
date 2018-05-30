@@ -38,7 +38,7 @@
   },
   "dependencies": {
     "fullcalendar": "^2.6.1",
-    "moment": "2.13.0",
+    "moment": "^2.19.3",
     "pikaday": "^1.4.0"
   }
 }
