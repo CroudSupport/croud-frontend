@@ -70,7 +70,7 @@ export default {
         this.create()
       },
       getDateFromMoment(value) {
-        if (value.constructor.name === 'Moment') {
+        if (moment.isMoment(value)) {
           return value.toDate()
         }
         return value
