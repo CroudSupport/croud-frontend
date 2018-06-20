@@ -239,7 +239,7 @@
                 },
 
                 searchQualification: {
-                    url: `//${gateway_url}/api/qualification?per_page=100&order_by=name,asc`,
+                    url: `//${gateway_url}/api/qualification?per_page=1000&order_by=name,asc`,
                     fields: {
                         results: 'data',
                         title: 'name',
