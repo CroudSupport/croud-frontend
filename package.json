@@ -1,6 +1,6 @@
 {
   "name": "croud-frontend",
-  "version": "0.1.0-0",
+  "version": "0.2.0-1",
   "description": "A collection of generic front-end resources for crouyd applications",
   "main": "croud-frontend.js",
   "browserify": {
@@ -10,7 +10,7 @@
     ]
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 0"
   },
   "repository": {
     "type": "git",
