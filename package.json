@@ -1,6 +1,6 @@
 {
   "name": "croud-frontend",
-  "version": "0.1.0",
+  "version": "0.2.0-0",
   "description": "A collection of generic front-end resources for crouyd applications",
   "main": "croud-frontend.js",
   "browserify": {
